@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<link rel="apple-touch-icon" sizes="180x180" href="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Baseball_%28red_seams%29.svg/240px-Baseball_%28red_seams%29.svg.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Baseball_%28red_seams%29.svg/240px-Baseball_%28red_seams%29.svg.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>8개 팀 야구 리그 기록실</title>
+  <title>8개 팀 야구 리그 기록실 (A조 · B조 · 준결승/결승)</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Inter & Noto Sans KR -->
@@ -19,7 +19,6 @@
     .tabular-nums {
       font-variant-numeric: tabular-nums;
     }
-    /* 스크롤바 커스텀 */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -54,16 +53,16 @@
           <h1 id="leagueTitleDisplay" class="text-lg sm:text-xl font-extrabold tracking-tight leading-tight">
             2026 야구 리그 기록실
           </h1>
-          <p class="text-xs text-slate-400">A조 · B조 순위 및 개인 누계 기록</p>
+          <p class="text-xs text-slate-400">A조 · B조 정규 순위 및 준결승 · 결승 토너먼트</p>
         </div>
       </div>
 
       <!-- 백업/복원/링크복사 -->
       <div class="flex items-center gap-1.5 sm:gap-2">
-        <button onclick="navigator.clipboard.writeText(window.location.href); showToast('웹앱 주소가 복사되었습니다!');" class="bg-amber-500 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-extrabold shadow hover:bg-amber-400 transition">
+        <button type="button" onclick="navigator.clipboard.writeText(window.location.href); showToast('웹앱 주소가 복사되었습니다!');" class="bg-amber-500 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-extrabold shadow hover:bg-amber-400 transition">
           🔗 링크 복사
         </button>
-        <button onclick="exportData()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 transition">
+        <button type="button" onclick="exportData()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 transition">
           💾 백업
         </button>
         <label class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 transition cursor-pointer">
@@ -77,13 +76,13 @@
     <nav class="bg-slate-800/90 border-t border-slate-700/80">
       <div class="max-w-6xl mx-auto px-2 flex overflow-x-auto no-scrollbar">
         <button type="button" onclick="switchTab('standings')" id="tab-standings" class="nav-btn active px-3.5 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-amber-400 text-amber-400 transition">
-          🏆 팀 순위 & 경기결과
+          🏆 팀 순위 & 결선 토너먼트
         </button>
         <button type="button" onclick="switchTab('batters')" id="tab-batters" class="nav-btn px-3.5 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-transparent text-slate-300 hover:text-white transition">
-          🏏 타자 기록 
+          🏏 타자 기록
         </button>
         <button type="button" onclick="switchTab('pitchers')" id="tab-pitchers" class="nav-btn px-3.5 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-transparent text-slate-300 hover:text-white transition">
-          ⚾ 투수 기록 
+          ⚾ 투수 기록
         </button>
         <button type="button" onclick="switchTab('recorder')" id="tab-recorder" class="nav-btn px-3.5 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-transparent text-slate-300 hover:text-white transition">
           🔒 ✍️ 기록 입력 (기록원)
@@ -107,7 +106,7 @@
       <div class="text-center space-y-1">
         <div class="w-12 h-12 bg-amber-100 text-amber-700 rounded-2xl mx-auto flex items-center justify-center text-xl font-black mb-2">🔒</div>
         <h3 class="text-lg font-extrabold text-slate-900">비밀번호 인증 필요</h3>
-        <p class="text-xs text-slate-500">기록원 메뉴에 접근하려면 비밀번호를 입력하세요.<br></p>
+        <p class="text-xs text-slate-500">기록원 메뉴에 접근하려면 비밀번호를 입력하세요.</p>
       </div>
       <form onsubmit="verifyPassword(event)" class="space-y-3">
         <input type="password" id="accessPasswordInput" placeholder="비밀번호 입력" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-center text-lg font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500">
@@ -142,7 +141,7 @@
   <!-- 메인 콘텐츠 영역 -->
   <main class="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-4 py-5 space-y-6">
 
-    <!-- 1. 팀 순위 & 경기 결과 탭 -->
+    <!-- 1. 팀 순위 & 결선 토너먼트 & 경기 결과 탭 -->
     <section id="view-standings" class="space-y-6">
       <!-- 상단 정렬 기준 컨트롤 바 -->
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3">
@@ -150,7 +149,7 @@
           <h2 class="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2">
             <span class="text-amber-500">🏆</span> A조 · B조 정규 순위표
           </h2>
-          <p class="text-xs text-slate-500 mt-0.5">4개 팀씩 A조·B조로 나뉜 순위표입니다. 경기 결과 입력 시 실시간 자동 반영됩니다.</p>
+          <p class="text-xs text-slate-500 mt-0.5">각 조 상위 2개 팀(1위, 2위)이 준결승 토너먼트에 진출합니다.</p>
         </div>
         <div class="flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs">
           <button type="button" onclick="setStandingMode('winPct')" id="btnModeWinPct" class="px-3 py-1.5 rounded-lg font-bold bg-amber-500 text-slate-950 transition">승률순</button>
@@ -158,7 +157,7 @@
         </div>
       </div>
 
-      <!-- A조 & B조 순위표 -->
+      <!-- A조 & B조 순위표 그리드 -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- A조 순위표 -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -167,7 +166,7 @@
               <span class="px-2.5 py-0.5 rounded-md bg-amber-500 text-slate-950 text-xs font-black">A조</span>
               <h3 class="text-sm sm:text-base font-extrabold">A조 순위</h3>
             </div>
-            <span class="text-[11px] text-slate-400">4개 팀</span>
+            <span class="text-[11px] text-amber-400 font-semibold">1·2위 4강 진출</span>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse tabular-nums">
@@ -196,7 +195,7 @@
               <span class="px-2.5 py-0.5 rounded-md bg-sky-400 text-slate-950 text-xs font-black">B조</span>
               <h3 class="text-sm sm:text-base font-extrabold">B조 순위</h3>
             </div>
-            <span class="text-[11px] text-slate-400">4개 팀</span>
+            <span class="text-[11px] text-sky-300 font-semibold">1·2위 4강 진출</span>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse tabular-nums">
@@ -219,12 +218,31 @@
         </div>
       </div>
 
-      <!-- 날짜별 경기 결과 리스트 -->
+      <!-- 준결승 & 결승 토너먼트 대진표 -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-4 sm:p-5 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white flex flex-wrap items-center justify-between gap-2 border-b-2 border-amber-500">
+          <div>
+            <h2 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
+              <span class="text-amber-400">👑</span> 결선 토너먼트 (준결승 · 결승)
+            </h2>
+            <p class="text-xs text-slate-300 mt-0.5">A조 1위 vs B조 2위 · B조 1위 vs A조 2위 크로스 토너먼트</p>
+          </div>
+          <button type="button" onclick="switchTab('recorder')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold rounded-xl transition">
+            ✍️ 준결승/결승 점수 입력
+          </button>
+        </div>
+
+        <div id="playoffBracketContainer" class="p-4 sm:p-6 bg-slate-50/70">
+          <!-- JS에서 렌더링 -->
+        </div>
+      </div>
+
+      <!-- 날짜별 예선 경기 결과 리스트 -->
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="p-4 sm:p-5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 class="text-base sm:text-lg font-extrabold text-slate-900">📅 날짜별 경기 결과</h2>
-            <p class="text-xs text-slate-500 mt-0.5">날짜별 경기 결과를 확인하세요.</p>
+            <h2 class="text-base sm:text-lg font-extrabold text-slate-900">📅 날짜별 정규 리그 경기 결과</h2>
+            <p class="text-xs text-slate-500 mt-0.5">날짜별 예선 경기 결과를 확인하세요.</p>
           </div>
           <div class="flex items-center gap-2">
             <select id="filterGameDate" onchange="renderGamesList()" class="bg-slate-50 border border-slate-300 text-slate-800 text-xs sm:text-sm font-semibold rounded-xl px-3 py-2 focus:outline-none">
@@ -332,12 +350,13 @@
 
     <!-- 4. 기록 입력 탭 (비밀번호 보호) -->
     <section id="view-recorder" class="hidden space-y-6">
+      <!-- 1) 정규 리그 경기 결과 등록 -->
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="p-4 sm:p-5 bg-slate-900 text-white">
           <h2 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
-            <span class="text-amber-400">🏟️</span> 1. 날짜별 경기 결과 등록
+            <span class="text-amber-400">🏟️</span> 1. 정규 리그 경기 결과 등록 (A조 · B조 예선)
           </h2>
-          <p class="text-xs text-slate-400 mt-0.5">경기 날짜와 양 팀 점수를 입력하면 팀 승패 및 순위가 즉시 업데이트됩니다.</p>
+          <p class="text-xs text-slate-400 mt-0.5">경기 날짜와 양 팀 점수를 입력하면 해당 조 순위 및 4강 대진표에 즉시 반영됩니다.</p>
         </div>
 
         <form onsubmit="handleAddGame(event)" class="p-4 sm:p-6 space-y-4">
@@ -348,7 +367,7 @@
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1.5">비고 / 구장 (선택)</label>
-              <input type="text" id="gameNoteInput" placeholder="예: 제1구장 1경기" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none">
+              <input type="text" id="gameNoteInput" placeholder="예: 제1구장 1경기 (A조)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none">
             </div>
           </div>
 
@@ -375,17 +394,139 @@
           </div>
 
           <button type="submit" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-amber-400 font-extrabold text-sm sm:text-base rounded-xl shadow-md transition">
-            + 경기 결과 저장하기
+            + 정규 리그 경기 결과 저장하기
           </button>
         </form>
       </div>
 
-      <!-- 선수 개인 기록 등록 -->
+      <!-- 2) 준결승 & 결승 토너먼트 결과 관리 -->
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="p-4 sm:p-5 bg-slate-900 text-white flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
-              <span class="text-amber-400">✍️</span> 2. 날짜별 선수 개인 기록 등록
+              <span class="text-amber-400">👑</span> 2. 준결승 & 결승 토너먼트 결과 입력
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">준결승 승자가 결승전에 자동 배치됩니다. (예선 순위표에는 합산되지 않습니다)</p>
+          </div>
+          <button type="button" onclick="resetPlayoffs()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-bold rounded-xl transition">
+            토너먼트 초기화
+          </button>
+        </div>
+
+        <div class="p-4 sm:p-6 space-y-5">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- 준결승 1경기 -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="px-2.5 py-0.5 rounded-md bg-amber-500 text-slate-950 text-xs font-black">준결승 1경기</span>
+                <input type="date" id="sf1DateInput" class="bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs font-semibold">
+              </div>
+
+              <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                  <select id="sf1Team1Select" onchange="handlePlayoffInputChange()" class="flex-1 bg-white border border-slate-300 rounded-xl px-2.5 py-2 text-xs sm:text-sm font-bold"></select>
+                  <input type="number" id="sf1Score1Input" min="0" max="99" placeholder="점수" oninput="handlePlayoffInputChange()" class="w-16 bg-white border border-slate-300 rounded-xl px-2 py-2 text-center text-sm font-black">
+                </div>
+                <div class="flex items-center gap-2">
+                  <select id="sf1Team2Select" onchange="handlePlayoffInputChange()" class="flex-1 bg-white border border-slate-300 rounded-xl px-2.5 py-2 text-xs sm:text-sm font-bold"></select>
+                  <input type="number" id="sf1Score2Input" min="0" max="99" placeholder="점수" oninput="handlePlayoffInputChange()" class="w-16 bg-white border border-slate-300 rounded-xl px-2 py-2 text-center text-sm font-black">
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between pt-1 border-t border-slate-200 text-xs">
+                <span class="text-slate-500 font-semibold">동점 시 부전승/추첨 승자:</span>
+                <select id="sf1TieWinnerSelect" onchange="handlePlayoffInputChange()" class="bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs font-bold">
+                  <option value="">점수로 결정</option>
+                  <option value="1">위쪽 팀 진출</option>
+                  <option value="2">아래쪽 팀 진출</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- 준결승 2경기 -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="px-2.5 py-0.5 rounded-md bg-sky-400 text-slate-950 text-xs font-black">준결승 2경기</span>
+                <input type="date" id="sf2DateInput" class="bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs font-semibold">
+              </div>
+
+              <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                  <select id="sf2Team1Select" onchange="handlePlayoffInputChange()" class="flex-1 bg-white border border-slate-300 rounded-xl px-2.5 py-2 text-xs sm:text-sm font-bold"></select>
+                  <input type="number" id="sf2Score1Input" min="0" max="99" placeholder="점수" oninput="handlePlayoffInputChange()" class="w-16 bg-white border border-slate-300 rounded-xl px-2 py-2 text-center text-sm font-black">
+                </div>
+                <div class="flex items-center gap-2">
+                  <select id="sf2Team2Select" onchange="handlePlayoffInputChange()" class="flex-1 bg-white border border-slate-300 rounded-xl px-2.5 py-2 text-xs sm:text-sm font-bold"></select>
+                  <input type="number" id="sf2Score2Input" min="0" max="99" placeholder="점수" oninput="handlePlayoffInputChange()" class="w-16 bg-white border border-slate-300 rounded-xl px-2 py-2 text-center text-sm font-black">
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between pt-1 border-t border-slate-200 text-xs">
+                <span class="text-slate-500 font-semibold">동점 시 부전승/추첨 승자:</span>
+                <select id="sf2TieWinnerSelect" onchange="handlePlayoffInputChange()" class="bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs font-bold">
+                  <option value="">점수로 결정</option>
+                  <option value="1">위쪽 팀 진출</option>
+                  <option value="2">아래쪽 팀 진출</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 결승전 -->
+          <div class="bg-amber-50/70 border-2 border-amber-300 rounded-2xl p-4 sm:p-5 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="px-3 py-1 rounded-lg bg-slate-900 text-amber-400 text-xs font-black">🏆 결승전 (FINAL)</span>
+                <span class="text-xs font-bold text-slate-600">준결승 1승자 vs 준결승 2승자</span>
+              </div>
+              <input type="date" id="finalDateInput" class="bg-white border border-amber-300 rounded-lg px-2.5 py-1 text-xs font-semibold">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-11 gap-3 items-center">
+              <div class="sm:col-span-5 bg-white border border-amber-200 rounded-xl p-3 flex items-center justify-between gap-2">
+                <div>
+                  <span class="text-[11px] font-bold text-amber-700 block">준결승 1경기 승자</span>
+                  <span id="finalTeam1Label" class="text-sm font-black text-slate-900">미정</span>
+                </div>
+                <input type="number" id="finalScore1Input" min="0" max="99" placeholder="점수" oninput="handlePlayoffInputChange()" class="w-16 bg-slate-50 border border-slate-300 rounded-xl px-2 py-2 text-center text-base font-black">
+              </div>
+
+              <div class="sm:col-span-1 text-center font-black text-amber-700 text-base">VS</div>
+
+              <div class="sm:col-span-5 bg-white border border-amber-200 rounded-xl p-3 flex items-center justify-between gap-2">
+                <div>
+                  <span class="text-[11px] font-bold text-sky-700 block">준결승 2경기 승자</span>
+                  <span id="finalTeam2Label" class="text-sm font-black text-slate-900">미정</span>
+                </div>
+                <input type="number" id="finalScore2Input" min="0" max="99" placeholder="점수" oninput="handlePlayoffInputChange()" class="w-16 bg-slate-50 border border-slate-300 rounded-xl px-2 py-2 text-center text-base font-black">
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="text-slate-600 font-semibold">동점 시 우승 결정:</span>
+                <select id="finalTieWinnerSelect" onchange="handlePlayoffInputChange()" class="bg-white border border-amber-300 rounded-lg px-2 py-1 text-xs font-bold">
+                  <option value="">점수로 결정</option>
+                  <option value="1">준결승 1 승자 우승</option>
+                  <option value="2">준결승 2 승자 우승</option>
+                </select>
+              </div>
+              <div id="finalChampionPreview" class="font-extrabold text-amber-800"></div>
+            </div>
+          </div>
+
+          <button type="button" onclick="savePlayoffsManual()" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-amber-400 font-extrabold text-sm sm:text-base rounded-xl shadow-md transition">
+            👑 준결승 · 결승 대진 및 점수 저장하기
+          </button>
+        </div>
+      </div>
+
+      <!-- 3) 선수 개인 기록 등록 -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-4 sm:p-5 bg-slate-900 text-white flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
+              <span class="text-amber-400">✍️</span> 3. 날짜별 선수 개인 기록 등록
             </h2>
             <p class="text-xs text-slate-400 mt-0.5">선수 개인 성적을 등록하면 누계 기록에 자동 합산됩니다.</p>
           </div>
@@ -483,7 +624,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
           <div>
             <h2 class="text-base sm:text-lg font-extrabold text-slate-900">⚙️ 대회 설정 및 데이터 관리</h2>
-            <p class="text-xs text-slate-500">대회 타이틀 및 비밀번호를 변경할 수 있습니다.</p>
+            <p class="text-xs text-slate-500">대회 타이틀, 비밀번호 및 각 팀의 조(A조/B조) 배정을 관리할 수 있습니다.</p>
           </div>
           <button type="button" onclick="confirmResetData()" class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold rounded-xl transition">
             🔄 샘플 데이터로 초기화
@@ -516,29 +657,55 @@
 
   <footer class="bg-slate-900 text-slate-400 text-xs py-6 mt-10 border-t border-slate-800">
     <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
-      <p class="font-semibold text-slate-300">⚾ 8개 팀 야구 리그 공식 기록 시스템</p>
+      <p class="font-semibold text-slate-300">⚾ 8개 팀 야구 리그 공식 기록 시스템 (A조 · B조 · 결선 토너먼트)</p>
       <p>모든 기록은 현재 기기 브라우저에 자동 저장됩니다.</p>
     </div>
   </footer>
 
   <!-- 자바스크립트 로직 -->
   <script>
-    const STORAGE_KEY = 'baseball_8teams_league_v3';
+    const STORAGE_KEY = 'baseball_8teams_league_v4';
+
+    function createDefaultPlayoffs() {
+      return {
+        sf1: { team1Id: 'AUTO_A1', team2Id: 'AUTO_B2', score1: '', score2: '', tieWinner: '', date: '' },
+        sf2: { team1Id: 'AUTO_B1', team2Id: 'AUTO_A2', score1: '', score2: '', tieWinner: '', date: '' },
+        final: { score1: '', score2: '', tieWinner: '', date: '' }
+      };
+    }
 
     let appState = {
-      leagueTitle: '2026 8개 팀 야구 리그 기록실',
+      leagueTitle: '2026 야구 리그 기록실',
       password: '1234',
       standingMode: 'winPct',
       eraBase: 9,
       teams: [],
       players: [],
       games: [],
-      playerLogs: []
+      playerLogs: [],
+      playoffs: createDefaultPlayoffs()
     };
 
     let currentRecordInputType = 'batter';
     let pendingProtectedTab = null;
     let isAuthenticated = false;
+
+    function normalizeTeamsGroups(teams) {
+      return teams.map((t, idx) => ({
+        ...t,
+        group: (t.group === 'A' || t.group === 'B') ? t.group : (idx < 4 ? 'A' : 'B')
+      }));
+    }
+
+    function normalizePlayoffs(p) {
+      const def = createDefaultPlayoffs();
+      if (!p || typeof p !== 'object') return def;
+      return {
+        sf1: { ...def.sf1, ...(p.sf1 || {}) },
+        sf2: { ...def.sf2, ...(p.sf2 || {}) },
+        final: { ...def.final, ...(p.final || {}) }
+      };
+    }
 
     function createInitialSampleData() {
       const teams = [
@@ -566,7 +733,8 @@
       ];
 
       const games = [
-        { id: 'g1', date: '2026-11-08', awayTeamId: 't2', homeTeamId: 't1', awayScore: 3, homeScore: 5, note: '개막전' }
+        { id: 'g1', date: '2026-11-08', awayTeamId: 't2', homeTeamId: 't1', awayScore: 3, homeScore: 5, note: 'A조 개막전' },
+        { id: 'g2', date: '2026-11-08', awayTeamId: 't6', homeTeamId: 't5', awayScore: 2, homeScore: 4, note: 'B조 개막전' }
       ];
 
       const playerLogs = [
@@ -574,17 +742,1172 @@
       ];
 
       return {
-        leagueTitle: '2026 8개 팀 야구 리그 기록실',
+        leagueTitle: '2026 야구 리그 기록실',
         password: '1234',
         standingMode: 'winPct',
         eraBase: 9,
         teams,
         players,
         games,
-        playerLogs
+        playerLogs,
+        playoffs: createDefaultPlayoffs()
       };
     }
 
-    function normalizeTeamGroups() {
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('baseball_8teams_league_v3');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.teams) && parsed.teams.length === 8) {
+            appState = parsed;
+            appState.teams = normalizeTeamsGroups(appState.teams);
+            appState.playoffs = normalizePlayoffs(appState.playoffs);
+            if (!appState.password) appState.password = '1234';
+            return;
+          }
+        }
+      } catch (e) {}
+      appState = createInitialSampleData();
+      saveState();
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        showToast('저장 공간 부족', 'error');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      const today = new Date().toISOString().split('T')[0];
+      const gd = document.getElementById('gameDateInput');
+      const ld = document.getElementById('playerLogDateInput');
+      if (gd) gd.value = today;
+      if (ld) ld.value = today;
+
+      refreshAllUI();
+    });
+
+    function refreshAllUI() {
+      const titleDisp = document.getElementById('leagueTitleDisplay');
+      const titleInput = document.getElementById('leagueTitleInput');
+      if (titleDisp) titleDisp.textContent = appState.leagueTitle;
+      if (titleInput) titleInput.value = appState.leagueTitle;
+
+      updateStandingModeButtons();
+      updateEraBaseButtons();
+      populateTeamDropdowns();
+      populateDateFilters();
+
+      renderStandingsTable();
+      renderPlayoffBracket();
+      syncPlayoffRecorderForm();
+      renderGamesList();
+      renderBattersTable();
+      renderPitchersTable();
+      renderPlayerLogsList();
+      renderTeamsManageGrid();
+    }
+
+    function switchTab(tabName) {
+      if (tabName === 'recorder' || tabName === 'teams') {
+        if (!isAuthenticated) {
+          pendingProtectedTab = tabName;
+          const pwInput = document.getElementById('accessPasswordInput');
+          if (pwInput) pwInput.value = '';
+          const modal = document.getElementById('passwordModal');
+          if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            if (pwInput) pwInput.focus();
+          }
+          return;
+        }
+      }
+
+      const tabs = ['standings', 'batters', 'pitchers', 'recorder', 'teams'];
+      tabs.forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const btn = document.getElementById(`tab-${t}`);
+        if (view) {
+          if (t === tabName) {
+            view.classList.remove('hidden');
+            if (btn) {
+              btn.classList.add('border-amber-400', 'text-amber-400');
+              btn.classList.remove('border-transparent', 'text-slate-300');
+            }
+          } else {
+            view.classList.add('hidden');
+            if (btn) {
+              btn.classList.remove('border-amber-400', 'text-amber-400');
+              btn.classList.add('border-transparent', 'text-slate-300');
+            }
+          }
+        }
+      });
+    }
+
+    function verifyPassword(e) {
+      e.preventDefault();
+      const inputPw = document.getElementById('accessPasswordInput').value;
+      const targetPw = appState.password || '1234';
+
+      if (inputPw === targetPw) {
+        isAuthenticated = true;
+        closePasswordModal();
+        showToast('인증되었습니다!');
+        if (pendingProtectedTab) {
+          const tab = pendingProtectedTab;
+          pendingProtectedTab = null;
+          switchTab(tab);
+        }
+      } else {
+        showToast('비밀번호가 틀렸습니다.', 'error');
+        const pwInput = document.getElementById('accessPasswordInput');
+        if (pwInput) pwInput.value = '';
+      }
+    }
+
+    function closePasswordModal() {
+      const modal = document.getElementById('passwordModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+      pendingProtectedTab = null;
+    }
+
+    function changePassword() {
+      const input = document.getElementById('newPasswordInput');
+      if (!input) return;
+      const newPw = input.value.trim();
+      if (!newPw || newPw.length < 4) {
+        showToast('4글자 이상 입력해주세요.', 'error');
+        return;
+      }
+      appState.password = newPw;
+      saveState();
+      input.value = '';
+      showToast('비밀번호가 변경되었습니다!');
+    }
+
+    let toastTimer = null;
+    function showToast(msg, type = 'success') {
+      const box = document.getElementById('toastBox');
+      const text = document.getElementById('toastMessage');
+      if (!box || !text) return;
+      const icon = type === 'error' ? '⚠️' : '✅';
+      text.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+      box.classList.remove('opacity-0', 'translate-y-4');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        box.classList.add('opacity-0', 'translate-y-4');
+      }, 2500);
+    }
+
+    function showConfirm(title, desc, onConfirm) {
+      const modal = document.getElementById('confirmModal');
+      const titleEl = document.getElementById('confirmTitle');
+      const descEl = document.getElementById('confirmDesc');
+      const okBtn = document.getElementById('confirmOkBtn');
+      const cancelBtn = document.getElementById('confirmCancelBtn');
+
+      if (!modal) return;
+      titleEl.textContent = title;
+      descEl.textContent = desc;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      const cleanup = () => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        okBtn.onclick = null;
+        cancelBtn.onclick = null;
+      };
+
+      cancelBtn.onclick = cleanup;
+      okBtn.onclick = () => {
+        cleanup();
+        onConfirm();
+      };
+    }
+
+    function getTeamName(teamId) {
+      const t = appState.teams.find(x => x.id === teamId);
+      return t ? t.name : '알 수 없음';
+    }
+
+    function getPlayerInfo(playerId) {
+      return appState.players.find(x => x.id === playerId) || { name: '삭제된 선수', number: '-' };
+    }
+
+    function formatInnings(totalOuts) {
+      return `${Math.floor(totalOuts / 3)}.${totalOuts % 3}`;
+    }
+
+    function formatAvg(hits, atBats) {
+      if (atBats === 0) return '.000';
+      const val = hits / atBats;
+      return val >= 1 ? val.toFixed(3) : val.toFixed(3).replace(/^0/, '');
+    }
+
+    // 1. A조 · B조 순위표
+    function setStandingMode(mode) {
+      appState.standingMode = mode;
+      saveState();
+      updateStandingModeButtons();
+      renderStandingsTable();
+      renderPlayoffBracket();
+      syncPlayoffRecorderForm();
+    }
+
+    function updateStandingModeButtons() {
+      const btnPct = document.getElementById('btnModeWinPct');
+      const btnPts = document.getElementById('btnModePoints');
+      const thMetrics = document.querySelectorAll('.th-primary-metric');
+      if (!btnPct || !btnPts) return;
+
+      if (appState.standingMode === 'winPct') {
+        btnPct.className = 'px-3 py-1.5 rounded-lg font-bold bg-amber-500 text-slate-950 transition';
+        btnPts.className = 'px-3 py-1.5 rounded-lg font-bold text-slate-300 hover:text-white transition';
+        thMetrics.forEach(th => { th.textContent = '승률'; });
+      } else {
+        btnPts.className = 'px-3 py-1.5 rounded-lg font-bold bg-amber-500 text-slate-950 transition';
+        btnPct.className = 'px-3 py-1.5 rounded-lg font-bold text-slate-300 hover:text-white transition';
+        thMetrics.forEach(th => { th.textContent = '승점'; });
+      }
+    }
+
+    function buildGroupStandings(groupCode) {
+      const statsMap = {};
+      appState.teams
+        .filter(t => (t.group || 'A') === groupCode)
+        .forEach(t => {
+          statsMap[t.id] = {
+            id: t.id,
+            name: t.name,
+            group: groupCode,
+            games: 0,
+            wins: 0,
+            draws: 0,
+            losses: 0,
+            runsFor: 0,
+            runsAgainst: 0
+          };
+        });
+
+      appState.games.forEach(g => {
+        const away = statsMap[g.awayTeamId];
+        const home = statsMap[g.homeTeamId];
+
+        if (away) {
+          away.games++;
+          away.runsFor += Number(g.awayScore);
+          away.runsAgainst += Number(g.homeScore);
+          if (g.awayScore > g.homeScore) away.wins++;
+          else if (g.homeScore > g.awayScore) away.losses++;
+          else away.draws++;
+        }
+        if (home) {
+          home.games++;
+          home.runsFor += Number(g.homeScore);
+          home.runsAgainst += Number(g.awayScore);
+          if (g.homeScore > g.awayScore) home.wins++;
+          else if (g.awayScore > g.homeScore) home.losses++;
+          else home.draws++;
+        }
+      });
+
+      const list = Object.values(statsMap).map(s => {
+        const dec = s.wins + s.losses;
+        const winPct = dec > 0 ? s.wins / dec : 0;
+        const points = s.wins * 3 + s.draws;
+        const diff = s.runsFor - s.runsAgainst;
+        return { ...s, winPct, points, diff };
+      });
+
+      list.sort((a, b) => {
+        if (appState.standingMode === 'winPct') {
+          if (Math.abs(b.winPct - a.winPct) > 0.00001) return b.winPct - a.winPct;
+          if (b.diff !== a.diff) return b.diff - a.diff;
+          return b.runsFor - a.runsFor;
+        } else {
+          if (b.points !== a.points) return b.points - a.points;
+          if (b.diff !== a.diff) return b.diff - a.diff;
+          return b.runsFor - a.runsFor;
+        }
+      });
+
+      return list;
+    }
+
+    function renderGroupBody(tbodyId, list) {
+      const tbody = document.getElementById(tbodyId);
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-slate-400 text-xs">배정된 팀이 없습니다.</td></tr>`;
+        return;
+      }
+
+      const leader = list[0];
+      list.forEach((team, idx) => {
+        const rank = idx + 1;
+        let gbText = '-';
+        if (idx > 0 && leader) {
+          const gb = ((leader.wins - team.wins) + (team.losses - leader.losses)) / 2;
+          gbText = gb === 0 ? '0.0' : gb.toFixed(1);
+        }
+
+        const primaryVal = appState.standingMode === 'winPct'
+          ? (team.wins + team.losses > 0 ? team.winPct.toFixed(3).replace(/^0/, '') : '.000')
+          : `${team.points}점`;
+
+        const rankBadge = rank === 1
+          ? `<span class="w-6 h-6 rounded-full bg-amber-400 text-slate-950 font-black text-xs inline-flex items-center justify-center">1</span>`
+          : rank === 2
+          ? `<span class="w-6 h-6 rounded-full bg-sky-200 text-slate-900 font-black text-xs inline-flex items-center justify-center">2</span>`
+          : `${rank}`;
+
+        const tr = document.createElement('tr');
+        tr.className = rank <= 2 ? 'bg-amber-50/25 hover:bg-slate-50 transition' : 'hover:bg-slate-50 transition';
+        tr.innerHTML = `
+          <td class="py-2.5 px-2.5 text-center font-bold">${rankBadge}</td>
+          <td class="py-2.5 px-2.5 font-extrabold text-slate-900">
+            ${team.name}
+            ${rank <= 2 ? '<span class="ml-1 text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-amber-400 font-bold">4강</span>' : ''}
+          </td>
+          <td class="py-2.5 px-2 text-center">${team.games}</td>
+          <td class="py-2.5 px-2 text-center font-bold text-blue-700">${team.wins}</td>
+          <td class="py-2.5 px-2 text-center text-slate-500">${team.draws}</td>
+          <td class="py-2.5 px-2 text-center font-bold text-rose-600">${team.losses}</td>
+          <td class="py-2.5 px-2.5 text-center font-black bg-amber-50/60">${primaryVal}</td>
+          <td class="py-2.5 px-2 text-center text-slate-500">${gbText}</td>
+          <td class="py-2.5 px-2 text-center font-bold ${team.diff > 0 ? 'text-blue-600' : team.diff < 0 ? 'text-rose-600' : ''}">${team.diff > 0 ? '+' + team.diff : team.diff}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderStandingsTable() {
+      renderGroupBody('standingsTableBodyA', buildGroupStandings('A'));
+      renderGroupBody('standingsTableBodyB', buildGroupStandings('B'));
+    }
+
+    // 2. 준결승 & 결승 토너먼트 계산 및 렌더링
+    function resolveSeedTeam(code) {
+      const standA = buildGroupStandings('A');
+      const standB = buildGroupStandings('B');
+      if (code === 'AUTO_A1') {
+        const t = standA[0];
+        return t ? { id: t.id, name: t.name, seedLabel: 'A조 1위' } : { id: '', name: 'A조 1위 미정', seedLabel: 'A조 1위' };
+      }
+      if (code === 'AUTO_A2') {
+        const t = standA[1];
+        return t ? { id: t.id, name: t.name, seedLabel: 'A조 2위' } : { id: '', name: 'A조 2위 미정', seedLabel: 'A조 2위' };
+      }
+      if (code === 'AUTO_B1') {
+        const t = standB[0];
+        return t ? { id: t.id, name: t.name, seedLabel: 'B조 1위' } : { id: '', name: 'B조 1위 미정', seedLabel: 'B조 1위' };
+      }
+      if (code === 'AUTO_B2') {
+        const t = standB[1];
+        return t ? { id: t.id, name: t.name, seedLabel: 'B조 2위' } : { id: '', name: 'B조 2위 미정', seedLabel: 'B조 2위' };
+      }
+      const found = appState.teams.find(t => t.id === code);
+      return found
+        ? { id: found.id, name: found.name, seedLabel: `${found.group || 'A'}조` }
+        : { id: '', name: '팀 미정', seedLabel: '-' };
+    }
+
+    function determineMatchWinner(team1, team2, score1Raw, score2Raw, tieWinner) {
+      const hasS1 = score1Raw !== '' && score1Raw !== null && !isNaN(Number(score1Raw));
+      const hasS2 = score2Raw !== '' && score2Raw !== null && !isNaN(Number(score2Raw));
+      if (!hasS1 || !hasS2) return null;
+
+      const s1 = Number(score1Raw);
+      const s2 = Number(score2Raw);
+      if (s1 > s2) return { side: 1, team: team1 };
+      if (s2 > s1) return { side: 2, team: team2 };
+      if (tieWinner === '1') return { side: 1, team: team1 };
+      if (tieWinner === '2') return { side: 2, team: team2 };
+      return { side: 0, team: null }; // 무승부 상태
+    }
+
+    function getPlayoffComputed() {
+      const p = normalizePlayoffs(appState.playoffs);
+      const sf1T1 = resolveSeedTeam(p.sf1.team1Id);
+      const sf1T2 = resolveSeedTeam(p.sf1.team2Id);
+      const sf1Win = determineMatchWinner(sf1T1, sf1T2, p.sf1.score1, p.sf1.score2, p.sf1.tieWinner);
+
+      const sf2T1 = resolveSeedTeam(p.sf2.team1Id);
+      const sf2T2 = resolveSeedTeam(p.sf2.team2Id);
+      const sf2Win = determineMatchWinner(sf2T1, sf2T2, p.sf2.score1, p.sf2.score2, p.sf2.tieWinner);
+
+      const finalT1 = (sf1Win && sf1Win.team) ? { ...sf1Win.team, seedLabel: '준결1 승자' } : { id: '', name: '준결승 1 승자', seedLabel: '준결1' };
+      const finalT2 = (sf2Win && sf2Win.team) ? { ...sf2Win.team, seedLabel: '준결2 승자' } : { id: '', name: '준결승 2 승자', seedLabel: '준결2' };
+      const finalWin = (sf1Win && sf1Win.team && sf2Win && sf2Win.team)
+        ? determineMatchWinner(finalT1, finalT2, p.final.score1, p.final.score2, p.final.tieWinner)
+        : null;
+
+      return { p, sf1T1, sf1T2, sf1Win, sf2T1, sf2T2, sf2Win, finalT1, finalT2, finalWin };
+    }
+
+    function renderPlayoffBracket() {
+      const container = document.getElementById('playoffBracketContainer');
+      if (!container) return;
+
+      const { p, sf1T1, sf1T2, sf1Win, sf2T1, sf2T2, sf2Win, finalT1, finalT2, finalWin } = getPlayoffComputed();
+
+      const fmtScore = (v) => (v !== '' && v !== null && !isNaN(Number(v))) ? Number(v) : '-';
+      const sf1S1 = fmtScore(p.sf1.score1);
+      const sf1S2 = fmtScore(p.sf1.score2);
+      const sf2S1 = fmtScore(p.sf2.score1);
+      const sf2S2 = fmtScore(p.sf2.score2);
+      const fS1 = fmtScore(p.final.score1);
+      const fS2 = fmtScore(p.final.score2);
+
+      const champBanner = (finalWin && finalWin.team)
+        ? `
+          <div class="mt-5 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 rounded-2xl p-4 text-center shadow-md border border-amber-300">
+            <div class="text-xs font-black tracking-wider uppercase">🏆 ${appState.leagueTitle} 최종 우승</div>
+            <div class="text-xl sm:text-2xl font-black mt-0.5">🎉 ${finalWin.team.name} 🎉</div>
+          </div>
+        `
+        : '';
+
+      container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 items-center tabular-nums">
+          <!-- 준결승 1 & 2 (좌측 2경기) -->
+          <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- 준결승 1카드 -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+              <div class="px-4 py-2.5 bg-slate-800 text-white flex items-center justify-between text-xs">
+                <span class="font-extrabold text-amber-400">준결승 1경기</span>
+                <span class="text-slate-300">${p.sf1.date || '일정 미정'}</span>
+              </div>
+              <div class="p-3.5 space-y-2">
+                <div class="flex items-center justify-between px-3 py-2 rounded-xl border ${sf1Win && sf1Win.side === 1 ? 'bg-blue-50 border-blue-300 font-black text-blue-900' : 'bg-slate-50 border-slate-200 font-bold text-slate-800'}">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-black shrink-0">${sf1T1.seedLabel}</span>
+                    <span class="truncate text-sm">${sf1T1.name}</span>
+                  </div>
+                  <span class="text-base font-black ml-2">${sf1S1}</span>
+                </div>
+                <div class="flex items-center justify-between px-3 py-2 rounded-xl border ${sf1Win && sf1Win.side === 2 ? 'bg-blue-50 border-blue-300 font-black text-blue-900' : 'bg-slate-50 border-slate-200 font-bold text-slate-800'}">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 text-[10px] font-black shrink-0">${sf1T2.seedLabel}</span>
+                    <span class="truncate text-sm">${sf1T2.name}</span>
+                  </div>
+                  <span class="text-base font-black ml-2">${sf1S2}</span>
+                </div>
+              </div>
+              <div class="px-4 py-2 bg-slate-50 border-t border-slate-100 text-xs font-bold text-slate-600 flex justify-between">
+                <span>결승 진출</span>
+                <span class="text-blue-700 font-extrabold">${sf1Win && sf1Win.team ? sf1Win.team.name : '미정'}</span>
+              </div>
+            </div>
+
+            <!-- 준결승 2카드 -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+              <div class="px-4 py-2.5 bg-slate-800 text-white flex items-center justify-between text-xs">
+                <span class="font-extrabold text-sky-400">준결승 2경기</span>
+                <span class="text-slate-300">${p.sf2.date || '일정 미정'}</span>
+              </div>
+              <div class="p-3.5 space-y-2">
+                <div class="flex items-center justify-between px-3 py-2 rounded-xl border ${sf2Win && sf2Win.side === 1 ? 'bg-blue-50 border-blue-300 font-black text-blue-900' : 'bg-slate-50 border-slate-200 font-bold text-slate-800'}">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 text-[10px] font-black shrink-0">${sf2T1.seedLabel}</span>
+                    <span class="truncate text-sm">${sf2T1.name}</span>
+                  </div>
+                  <span class="text-base font-black ml-2">${sf2S1}</span>
+                </div>
+                <div class="flex items-center justify-between px-3 py-2 rounded-xl border ${sf2Win && sf2Win.side === 2 ? 'bg-blue-50 border-blue-300 font-black text-blue-900' : 'bg-slate-50 border-slate-200 font-bold text-slate-800'}">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-black shrink-0">${sf2T2.seedLabel}</span>
+                    <span class="truncate text-sm">${sf2T2.name}</span>
+                  </div>
+                  <span class="text-base font-black ml-2">${sf2S2}</span>
+                </div>
+              </div>
+              <div class="px-4 py-2 bg-slate-50 border-t border-slate-100 text-xs font-bold text-slate-600 flex justify-between">
+                <span>결승 진출</span>
+                <span class="text-blue-700 font-extrabold">${sf2Win && sf2Win.team ? sf2Win.team.name : '미정'}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 결승전 카드 -->
+          <div class="bg-white rounded-2xl border-2 border-amber-400 shadow-md overflow-hidden">
+            <div class="px-4 py-2.5 bg-slate-900 text-white flex items-center justify-between text-xs">
+              <span class="font-black text-amber-400">🏆 결승전 (FINAL)</span>
+              <span class="text-slate-300">${p.final.date || '일정 미정'}</span>
+            </div>
+            <div class="p-3.5 space-y-2">
+              <div class="flex items-center justify-between px-3 py-2.5 rounded-xl border ${finalWin && finalWin.side === 1 ? 'bg-amber-100 border-amber-400 font-black text-slate-950' : 'bg-slate-50 border-slate-200 font-bold text-slate-800'}">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="px-1.5 py-0.5 rounded bg-slate-800 text-amber-400 text-[10px] font-black shrink-0">준결1</span>
+                  <span class="truncate text-sm">${finalT1.name}</span>
+                </div>
+                <span class="text-base font-black ml-2">${fS1}</span>
+              </div>
+              <div class="flex items-center justify-between px-3 py-2.5 rounded-xl border ${finalWin && finalWin.side === 2 ? 'bg-amber-100 border-amber-400 font-black text-slate-950' : 'bg-slate-50 border-slate-200 font-bold text-slate-800'}">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="px-1.5 py-0.5 rounded bg-slate-800 text-sky-400 text-[10px] font-black shrink-0">준결2</span>
+                  <span class="truncate text-sm">${finalT2.name}</span>
+                </div>
+                <span class="text-base font-black ml-2">${fS2}</span>
+              </div>
+            </div>
+            <div class="px-4 py-2.5 bg-amber-50 border-t border-amber-200 text-xs font-extrabold text-amber-900 flex justify-between">
+              <span>최종 우승팀</span>
+              <span>${finalWin && finalWin.team ? '👑 ' + finalWin.team.name : '미정'}</span>
+            </div>
+          </div>
+        </div>
+        ${champBanner}
+      `;
+    }
+
+    function buildPlayoffTeamOptions(selectedVal) {
+      const standA = buildGroupStandings('A');
+      const standB = buildGroupStandings('B');
+      const autoOpts = [
+        { val: 'AUTO_A1', label: `자동: A조 1위 (${standA[0] ? standA[0].name : '미정'})` },
+        { val: 'AUTO_B2', label: `자동: B조 2위 (${standB[1] ? standB[1].name : '미정'})` },
+        { val: 'AUTO_B1', label: `자동: B조 1위 (${standB[0] ? standB[0].name : '미정'})` },
+        { val: 'AUTO_A2', label: `자동: A조 2위 (${standA[1] ? standA[1].name : '미정'})` }
+      ];
+      let html = '<optgroup label="순위 자동 연동">';
+      autoOpts.forEach(o => {
+        html += `<option value="${o.val}" ${selectedVal === o.val ? 'selected' : ''}>${o.label}</option>`;
+      });
+      html += '</optgroup><optgroup label="개별 팀 직접 지정">';
+      appState.teams.forEach(t => {
+        html += `<option value="${t.id}" ${selectedVal === t.id ? 'selected' : ''}>[${t.group || 'A'}조] ${t.name}</option>`;
+      });
+      html += '</optgroup>';
+      return html;
+    }
+
+    function syncPlayoffRecorderForm() {
+      const p = normalizePlayoffs(appState.playoffs);
+      const sf1T1El = document.getElementById('sf1Team1Select');
+      if (!sf1T1El) return;
+
+      sf1T1El.innerHTML = buildPlayoffTeamOptions(p.sf1.team1Id);
+      document.getElementById('sf1Team2Select').innerHTML = buildPlayoffTeamOptions(p.sf1.team2Id);
+      document.getElementById('sf2Team1Select').innerHTML = buildPlayoffTeamOptions(p.sf2.team1Id);
+      document.getElementById('sf2Team2Select').innerHTML = buildPlayoffTeamOptions(p.sf2.team2Id);
+
+      document.getElementById('sf1Score1Input').value = p.sf1.score1;
+      document.getElementById('sf1Score2Input').value = p.sf1.score2;
+      document.getElementById('sf1TieWinnerSelect').value = p.sf1.tieWinner || '';
+      document.getElementById('sf1DateInput').value = p.sf1.date || '';
+
+      document.getElementById('sf2Score1Input').value = p.sf2.score1;
+      document.getElementById('sf2Score2Input').value = p.sf2.score2;
+      document.getElementById('sf2TieWinnerSelect').value = p.sf2.tieWinner || '';
+      document.getElementById('sf2DateInput').value = p.sf2.date || '';
+
+      document.getElementById('finalScore1Input').value = p.final.score1;
+      document.getElementById('finalScore2Input').value = p.final.score2;
+      document.getElementById('finalTieWinnerSelect').value = p.final.tieWinner || '';
+      document.getElementById('finalDateInput').value = p.final.date || '';
+
+      const { finalT1, finalT2, finalWin } = getPlayoffComputed();
+      document.getElementById('finalTeam1Label').textContent = finalT1.name;
+      document.getElementById('finalTeam2Label').textContent = finalT2.name;
+      document.getElementById('finalChampionPreview').textContent =
+        (finalWin && finalWin.team) ? `👑 우승: ${finalWin.team.name}` : '';
+    }
+
+    function readPlayoffFormToState() {
+      appState.playoffs = {
+        sf1: {
+          team1Id: document.getElementById('sf1Team1Select').value,
+          team2Id: document.getElementById('sf1Team2Select').value,
+          score1: document.getElementById('sf1Score1Input').value,
+          score2: document.getElementById('sf1Score2Input').value,
+          tieWinner: document.getElementById('sf1TieWinnerSelect').value,
+          date: document.getElementById('sf1DateInput').value
+        },
+        sf2: {
+          team1Id: document.getElementById('sf2Team1Select').value,
+          team2Id: document.getElementById('sf2Team2Select').value,
+          score1: document.getElementById('sf2Score1Input').value,
+          score2: document.getElementById('sf2Score2Input').value,
+          tieWinner: document.getElementById('sf2TieWinnerSelect').value,
+          date: document.getElementById('sf2DateInput').value
+        },
+        final: {
+          score1: document.getElementById('finalScore1Input').value,
+          score2: document.getElementById('finalScore2Input').value,
+          tieWinner: document.getElementById('finalTieWinnerSelect').value,
+          date: document.getElementById('finalDateInput').value
+        }
+      };
+    }
+
+    function handlePlayoffInputChange() {
+      readPlayoffFormToState();
+      saveState();
+      renderPlayoffBracket();
+      const { finalT1, finalT2, finalWin } = getPlayoffComputed();
+      document.getElementById('finalTeam1Label').textContent = finalT1.name;
+      document.getElementById('finalTeam2Label').textContent = finalT2.name;
+      document.getElementById('finalChampionPreview').textContent =
+        (finalWin && finalWin.team) ? `👑 우승: ${finalWin.team.name}` : '';
+    }
+
+    function savePlayoffsManual() {
+      handlePlayoffInputChange();
+      showToast('준결승 · 결승 대진 및 점수가 저장되었습니다!');
+    }
+
+    function resetPlayoffs() {
+      showConfirm('토너먼트 초기화', '준결승과 결승 점수 및 일정을 모두 초기화하시겠습니까?', () => {
+        appState.playoffs = createDefaultPlayoffs();
+        saveState();
+        refreshAllUI();
+        showToast('토너먼트 대진표가 초기화되었습니다.');
+      });
+    }
+
+    // 경기 결과 등록
+    function handleAddGame(e) {
+      e.preventDefault();
+      const date = document.getElementById('gameDateInput').value;
+      const note = document.getElementById('gameNoteInput').value.trim();
+      const awayTeamId = document.getElementById('awayTeamSelect').value;
+      const homeTeamId = document.getElementById('homeTeamSelect').value;
+      const awayScore = parseInt(document.getElementById('awayScoreInput').value, 10) || 0;
+      const homeScore = parseInt(document.getElementById('homeScoreInput').value, 10) || 0;
+
+      if (awayTeamId === homeTeamId) {
+        showToast('원정팀과 홈팀이 같을 수 없습니다.', 'error');
+        return;
+      }
+
+      appState.games.unshift({ id: 'g_' + Date.now(), date, awayTeamId, homeTeamId, awayScore, homeScore, note });
+      saveState();
+      document.getElementById('awayScoreInput').value = 0;
+      document.getElementById('homeScoreInput').value = 0;
+      document.getElementById('gameNoteInput').value = '';
+      refreshAllUI();
+      showToast('경기 결과가 등록되었습니다!');
+    }
+
+    function deleteGame(gameId) {
+      showConfirm('경기 삭제', '이 경기 결과를 삭제하시겠습니까?', () => {
+        appState.games = appState.games.filter(g => g.id !== gameId);
+        saveState();
+        refreshAllUI();
+        showToast('경기가 삭제되었습니다.');
+      });
+    }
+
+    function populateDateFilters() {
+      const gameDates = [...new Set(appState.games.map(g => g.date))].sort().reverse();
+      const gameSel = document.getElementById('filterGameDate');
+      if (gameSel) {
+        const prev = gameSel.value;
+        gameSel.innerHTML = '<option value="ALL">전체 날짜 보기</option>';
+        gameDates.forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d;
+          opt.textContent = `${d} 경기`;
+          gameSel.appendChild(opt);
+        });
+        if (gameDates.includes(prev)) gameSel.value = prev;
+      }
+
+      const logDates = [...new Set(appState.playerLogs.map(l => l.date))].sort().reverse();
+      const logSel = document.getElementById('filterLogDate');
+      if (logSel) {
+        const prevLog = logSel.value;
+        logSel.innerHTML = '<option value="ALL">전체 날짜 내역</option>';
+        logDates.forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d;
+          opt.textContent = `${d} 기록`;
+          logSel.appendChild(opt);
+        });
+        if (logDates.includes(prevLog)) logSel.value = prevLog;
+      }
+    }
+
+    function renderGamesList() {
+      const filterDate = document.getElementById('filterGameDate').value;
+      const container = document.getElementById('gamesListContainer');
+      if (!container) return;
+
+      let list = [...appState.games].sort((a, b) => b.date.localeCompare(a.date));
+      if (filterDate !== 'ALL') list = list.filter(g => g.date === filterDate);
+
+      if (list.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 text-slate-400 text-sm">등록된 경기가 없습니다.</div>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      list.forEach(g => {
+        const awayTeam = appState.teams.find(t => t.id === g.awayTeamId);
+        const homeTeam = appState.teams.find(t => t.id === g.homeTeamId);
+        const awayName = awayTeam ? awayTeam.name : '알 수 없음';
+        const homeName = homeTeam ? homeTeam.name : '알 수 없음';
+        const groupLabel = awayTeam && homeTeam && awayTeam.group === homeTeam.group
+          ? `${awayTeam.group}조`
+          : '교류전';
+        const aWin = g.awayScore > g.homeScore;
+        const hWin = g.homeScore > g.awayScore;
+
+        const div = document.createElement('div');
+        div.className = 'bg-white border border-slate-200 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3';
+        div.innerHTML = `
+          <div class="text-xs text-slate-500 font-semibold flex items-center gap-1.5">
+            <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-extrabold">${groupLabel}</span>
+            <span>${g.date} ${g.note ? '· ' + g.note : ''}</span>
+          </div>
+          <div class="flex items-center justify-center gap-4 flex-1 font-extrabold">
+            <span class="${aWin ? 'text-blue-700' : ''}">${awayName}</span>
+            <span class="bg-slate-900 text-white px-3 py-1 rounded-lg">${g.awayScore} : ${g.homeScore}</span>
+            <span class="${hWin ? 'text-blue-700' : ''}">${homeName}</span>
+          </div>
+          <button type="button" onclick="deleteGame('${g.id}')" class="text-xs text-rose-600 font-bold hover:bg-rose-50 px-2 py-1 rounded">삭제</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // 기록 입력 유형
+    function setRecordInputType(type) {
+      currentRecordInputType = type;
+      const bBtn = document.getElementById('btnRecBatter');
+      const pBtn = document.getElementById('btnRecPitcher');
+      const bBox = document.getElementById('batterFieldsBox');
+      const pBox = document.getElementById('pitcherFieldsBox');
+      if (!bBtn || !pBtn) return;
+
+      if (type === 'batter') {
+        bBtn.className = 'px-3.5 py-1.5 rounded-lg font-bold bg-amber-500 text-slate-950 transition';
+        pBtn.className = 'px-3.5 py-1.5 rounded-lg font-bold text-slate-300 hover:text-white transition';
+        bBox.classList.remove('hidden');
+        pBox.classList.add('hidden');
+      } else {
+        pBtn.className = 'px-3.5 py-1.5 rounded-lg font-bold bg-amber-500 text-slate-950 transition';
+        bBtn.className = 'px-3.5 py-1.5 rounded-lg font-bold text-slate-300 hover:text-white transition';
+        pBox.classList.remove('hidden');
+        bBox.classList.add('hidden');
+      }
+    }
+
+    function populateTeamDropdowns() {
+      const ids = ['awayTeamSelect', 'homeTeamSelect', 'recTeamSelect', 'batterTeamFilter', 'pitcherTeamFilter'];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const prev = el.value;
+        const isFilter = id.includes('Filter');
+        el.innerHTML = isFilter ? '<option value="ALL">전체 8개 팀</option>' : '';
+
+        appState.teams.forEach(t => {
+          const opt = document.createElement('option');
+          opt.value = t.id;
+          opt.textContent = `[${t.group || 'A'}조] ${t.name}`;
+          el.appendChild(opt);
+        });
+
+        if (prev && [...el.options].some(o => o.value === prev)) el.value = prev;
+        else if (id === 'homeTeamSelect' && appState.teams.length > 1) el.value = appState.teams[1].id;
+      });
+      updateRecPlayerDropdown();
+    }
+
+    function updateRecPlayerDropdown() {
+      const teamId = document.getElementById('recTeamSelect').value;
+      const playerSel = document.getElementById('recPlayerSelect');
+      if (!playerSel) return;
+
+      const players = appState.players.filter(p => p.teamId === teamId);
+      playerSel.innerHTML = '';
+      if (players.length === 0) {
+        playerSel.innerHTML = '<option value="">선수 없음 ([팀/선수 관리]에서 추가)</option>';
+        return;
+      }
+      players.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = `${p.number ? '#' + p.number + ' ' : ''}${p.name}`;
+        playerSel.appendChild(opt);
+      });
+    }
+
+    function handleAddPlayerLog(e) {
+      e.preventDefault();
+      const date = document.getElementById('playerLogDateInput').value;
+      const teamId = document.getElementById('recTeamSelect').value;
+      const playerId = document.getElementById('recPlayerSelect').value;
+
+      if (!playerId) {
+        showToast('선수를 선택해주세요.', 'error');
+        return;
+      }
+
+      if (currentRecordInputType === 'batter') {
+        const atBats = parseInt(document.getElementById('inAtBats').value, 10) || 0;
+        const hits = parseInt(document.getElementById('inHits').value, 10) || 0;
+        const hr = parseInt(document.getElementById('inHomeRuns').value, 10) || 0;
+
+        if (hits > atBats) {
+          showToast('안타가 타수보다 많습니다.', 'error');
+          return;
+        }
+
+        appState.playerLogs.unshift({ id: 'log_' + Date.now(), date, type: 'batter', teamId, playerId, atBats, hits, hr });
+        saveState();
+        refreshAllUI();
+        showToast('타자 기록이 반영되었습니다!');
+      } else {
+        const result = document.getElementById('inPitchResult').value;
+        const whole = parseInt(document.getElementById('inInningsWhole').value, 10) || 0;
+        const rem = parseInt(document.getElementById('inInningsOuts').value, 10) || 0;
+        const er = parseInt(document.getElementById('inEarnedRuns').value, 10) || 0;
+
+        appState.playerLogs.unshift({ id: 'log_' + Date.now(), date, type: 'pitcher', teamId, playerId, result, outs: whole * 3 + rem, er });
+        saveState();
+        refreshAllUI();
+        showToast('투수 기록이 반영되었습니다!');
+      }
+    }
+
+    function deletePlayerLog(logId) {
+      showConfirm('기록 삭제', '이 선수 기록을 삭제하시겠습니까?', () => {
+        appState.playerLogs = appState.playerLogs.filter(l => l.id !== logId);
+        saveState();
+        refreshAllUI();
+        showToast('기록이 삭제되었습니다.');
+      });
+    }
+
+    function renderPlayerLogsList() {
+      const filterDate = document.getElementById('filterLogDate').value;
+      const container = document.getElementById('playerLogsContainer');
+      if (!container) return;
+
+      let logs = [...appState.playerLogs].sort((a, b) => b.date.localeCompare(a.date));
+      if (filterDate !== 'ALL') logs = logs.filter(l => l.date === filterDate);
+
+      if (logs.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-sm text-slate-400">등록된 기록이 없습니다.</div>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      logs.forEach(l => {
+        const p = getPlayerInfo(l.playerId);
+        const isBat = l.type === 'batter';
+        const sum = isBat ? `${l.atBats}타수 ${l.hits}안타 ${l.hr}홈런` : `${formatInnings(l.outs)}이닝 ${l.er}자책`;
+
+        const div = document.createElement('div');
+        div.className = 'p-3.5 sm:px-5 flex items-center justify-between text-sm hover:bg-slate-50';
+        div.innerHTML = `
+          <div><span class="text-xs font-bold text-slate-500">${l.date}</span> <span class="px-2 py-0.5 rounded text-xs font-extrabold ${isBat ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}">${isBat ? '타자' : '투수'}</span> <b>${p.name}</b> (${sum})</div>
+          <button type="button" onclick="deletePlayerLog('${l.id}')" class="text-xs text-rose-600 font-bold">삭제</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // 타자 누계 테이블
+    function renderBattersTable() {
+      const filter = document.getElementById('batterTeamFilter').value;
+      const sort = document.getElementById('batterSortBy').value;
+      const map = {};
+
+      appState.playerLogs.filter(l => l.type === 'batter').forEach(l => {
+        if (!map[l.playerId]) {
+          const p = getPlayerInfo(l.playerId);
+          map[l.playerId] = { playerId: l.playerId, name: p.name, number: p.number, teamId: l.teamId, games: 0, atBats: 0, hits: 0, hr: 0 };
+        }
+        map[l.playerId].games++;
+        map[l.playerId].atBats += Number(l.atBats);
+        map[l.playerId].hits += Number(l.hits);
+        map[l.playerId].hr += Number(l.hr);
+      });
+
+      let list = Object.values(map).map(b => ({ ...b, avg: b.atBats > 0 ? b.hits / b.atBats : 0 }));
+      if (filter !== 'ALL') list = list.filter(b => b.teamId === filter);
+
+      list.sort((a, b) => {
+        if (sort === 'hits') return b.hits - a.hits;
+        if (sort === 'hr') return b.hr - a.hr;
+        if (sort === 'games') return b.games - a.games;
+        return b.avg - a.avg;
+      });
+
+      const tbody = document.getElementById('battersTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-10 text-center text-slate-400">집계된 타자 기록이 없습니다.</td></tr>`;
+        return;
+      }
+
+      list.forEach((b, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50';
+        tr.innerHTML = `
+          <td class="py-3 px-3 text-center font-bold">${idx + 1}</td>
+          <td class="py-3 px-3 font-extrabold">${b.name} ${b.number ? '#' + b.number : ''}</td>
+          <td class="py-3 px-3 text-xs text-slate-600">${getTeamName(b.teamId)}</td>
+          <td class="py-3 px-3 text-center">${b.games}</td>
+          <td class="py-3 px-3 text-center font-black bg-amber-50/60">${formatAvg(b.hits, b.atBats)}</td>
+          <td class="py-3 px-3 text-center font-bold text-blue-700">${b.hits}</td>
+          <td class="py-3 px-3 text-center font-bold text-rose-600">${b.hr}</td>
+          <td class="py-3 px-3 text-center text-xs text-slate-400">${b.atBats}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 투수 누계 테이블
+    function setEraBase(base) {
+      appState.eraBase = base;
+      saveState();
+      updateEraBaseButtons();
+      renderPitchersTable();
+    }
+
+    function updateEraBaseButtons() {
+      const b9 = document.getElementById('btnEra9');
+      const b7 = document.getElementById('btnEra7');
+      if (!b9 || !b7) return;
+      if (appState.eraBase === 9) {
+        b9.className = 'px-2.5 py-1 rounded-lg font-bold bg-amber-500 text-slate-950';
+        b7.className = 'px-2.5 py-1 rounded-lg font-bold text-slate-300';
+      } else {
+        b7.className = 'px-2.5 py-1 rounded-lg font-bold bg-amber-500 text-slate-950';
+        b9.className = 'px-2.5 py-1 rounded-lg font-bold text-slate-300';
+      }
+    }
+
+    function renderPitchersTable() {
+      const filter = document.getElementById('pitcherTeamFilter').value;
+      const sort = document.getElementById('pitcherSortBy').value;
+      const map = {};
+
+      appState.playerLogs.filter(l => l.type === 'pitcher').forEach(l => {
+        if (!map[l.playerId]) {
+          const p = getPlayerInfo(l.playerId);
+          map[l.playerId] = { playerId: l.playerId, name: p.name, number: p.number, teamId: l.teamId, games: 0, wins: 0, losses: 0, outs: 0, er: 0 };
+        }
+        map[l.playerId].games++;
+        if (l.result === 'WIN') map[l.playerId].wins++;
+        if (l.result === 'LOSS') map[l.playerId].losses++;
+        map[l.playerId].outs += Number(l.outs);
+        map[l.playerId].er += Number(l.er);
+      });
+
+      let list = Object.values(map).map(p => {
+        const ri = p.outs / 3;
+        const era = ri > 0 ? (p.er * appState.eraBase) / ri : (p.er > 0 ? 99.99 : 0);
+        return { ...p, era };
+      });
+
+      if (filter !== 'ALL') list = list.filter(p => p.teamId === filter);
+      list.sort((a, b) => {
+        if (sort === 'wins') return b.wins - a.wins;
+        if (sort === 'innings') return b.outs - a.outs;
+        if (sort === 'games') return b.games - a.games;
+        return a.era - b.era;
+      });
+
+      const tbody = document.getElementById('pitchersTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="py-10 text-center text-slate-400">집계된 투수 기록이 없습니다.</td></tr>`;
+        return;
+      }
+
+      list.forEach((p, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50';
+        tr.innerHTML = `
+          <td class="py-3 px-3 text-center font-bold">${idx + 1}</td>
+          <td class="py-3 px-3 font-extrabold">${p.name} ${p.number ? '#' + p.number : ''}</td>
+          <td class="py-3 px-3 text-xs text-slate-600">${getTeamName(p.teamId)}</td>
+          <td class="py-3 px-3 text-center">${p.games}</td>
+          <td class="py-3 px-3 text-center font-bold text-blue-700">${p.wins}</td>
+          <td class="py-3 px-3 text-center font-bold text-rose-600">${p.losses}</td>
+          <td class="py-3 px-3 text-center font-black bg-amber-50/60">${p.era.toFixed(2)}</td>
+          <td class="py-3 px-3 text-center font-bold">${formatInnings(p.outs)}</td>
+          <td class="py-3 px-3 text-center text-xs text-slate-400">${p.er}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 팀 관리 및 로스터
+    function saveLeagueTitle() {
+      const val = document.getElementById('leagueTitleInput').value.trim();
+      if (!val) {
+        showToast('대회명을 입력하세요.', 'error');
+        return;
+      }
+      appState.leagueTitle = val;
+      saveState();
+      refreshAllUI();
+      showToast('대회명이 변경되었습니다.');
+    }
+
+    function updateTeamName(teamId) {
+      const val = document.getElementById(`teamNameInput_${teamId}`).value.trim();
+      if (!val) {
+        showToast('팀명을 입력하세요.', 'error');
+        return;
+      }
+      const team = appState.teams.find(t => t.id === teamId);
+      if (team) {
+        team.name = val;
+        saveState();
+        refreshAllUI();
+        showToast('팀명이 수정되었습니다.');
+      }
+    }
+
+    function updateTeamGroup(teamId, newGroup) {
+      const team = appState.teams.find(t => t.id === teamId);
+      if (team && (newGroup === 'A' || newGroup === 'B')) {
+        team.group = newGroup;
+        saveState();
+        refreshAllUI();
+        showToast(`${team.name} 팀이 ${newGroup}조로 이동되었습니다.`);
+      }
+    }
+
+    function addPlayerToTeam(e, teamId) {
+      e.preventDefault();
+      const nameInput = document.getElementById(`newPlayerName_${teamId}`);
+      const numInput = document.getElementById(`newPlayerNum_${teamId}`);
+      const name = nameInput.value.trim();
+      const number = numInput.value.trim();
+
+      if (!name) return;
+
+      appState.players.push({ id: 'p_' + Date.now() + '_' + Math.floor(Math.random() * 100), teamId, name, number });
+      nameInput.value = '';
+      numInput.value = '';
+      saveState();
+      refreshAllUI();
+      showToast('선수가 등록되었습니다.');
+    }
+
+    function deletePlayer(playerId) {
+      showConfirm('선수 삭제', '선수를 삭제하시겠습니까?', () => {
+        appState.players = appState.players.filter(p => p.id !== playerId);
+        saveState();
+        refreshAllUI();
+        showToast('선수가 삭제되었습니다.');
+      });
+    }
+
+    function renderTeamsManageGrid() {
+      const grid = document.getElementById('teamsManageGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
       appState.teams.forEach((team, idx) => {
-        if (team.group !== 'A' &&
+        const roster = appState.players.filter(p => p.teamId === team.id);
+        const currentGroup = team.group || (idx < 4 ? 'A' : 'B');
+        const div = document.createElement('div');
+        div.className = 'bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col';
+        div.innerHTML = `
+          <div class="p-3.5 bg-slate-900 text-white flex items-center gap-2">
+            <select onchange="updateTeamGroup('${team.id}', this.value)" class="px-2 py-1 rounded text-xs font-black focus:outline-none ${currentGroup === 'A' ? 'bg-amber-500 text-slate-950' : 'bg-sky-400 text-slate-950'}">
+              <option value="A" ${currentGroup === 'A' ? 'selected' : ''}>A조</option>
+              <option value="B" ${currentGroup === 'B' ? 'selected' : ''}>B조</option>
+            </select>
+            <input type="text" id="teamNameInput_${team.id}" value="${team.name}" class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1 text-sm font-bold text-white focus:outline-none">
+            <button type="button" onclick="updateTeamName('${team.id}')" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-xs font-bold rounded-lg">저장</button>
+          </div>
+          <div class="p-4 flex-1 flex flex-col justify-between space-y-4">
+            <div class="space-y-1.5">
+              <div class="text-xs font-bold text-slate-500 flex justify-between"><span>선수 명단</span><span>총 ${roster.length}명</span></div>
+              <div class="flex flex-wrap gap-1.5 pt-1">
+                ${roster.length === 0 ? '<span class="text-xs text-slate-400">선수가 없습니다.</span>' : ''}
+                ${roster.map(p => `
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 border rounded-lg text-xs font-bold">
+                    ${p.number ? '#' + p.number + ' ' : ''}${p.name}
+                    <button type="button" onclick="deletePlayer('${p.id}')" class="text-slate-400 hover:text-rose-600 font-black ml-1">×</button>
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+            <form onsubmit="addPlayerToTeam(event, '${team.id}')" class="flex gap-1.5 pt-2 border-t border-slate-100">
+              <input type="text" id="newPlayerNum_${team.id}" placeholder="배번" class="w-16 bg-slate-50 border rounded-lg px-2 py-2 text-xs text-center focus:outline-none">
+              <input type="text" id="newPlayerName_${team.id}" placeholder="선수 이름" required class="flex-1 bg-slate-50 border rounded-lg px-3 py-2 text-xs focus:outline-none">
+              <button type="submit" class="px-3 py-2 bg-slate-900 text-amber-400 text-xs font-extrabold rounded-lg">+ 추가</button>
+            </form>
+          </div>
+        `;
+        grid.appendChild(div);
+      });
+    }
+
+    // 백업 / 복원 / 초기화
+    function exportData() {
+      const dataStr = JSON.stringify(appState, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `baseball_league_backup_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('백업 파일이 다운로드되었습니다.');
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed && Array.isArray(parsed.teams) && parsed.teams.length === 8) {
+            appState = parsed;
+            appState.teams = normalizeTeamsGroups(appState.teams);
+            appState.playoffs = normalizePlayoffs(appState.playoffs);
+            saveState();
+            refreshAllUI();
+            showToast('백업 데이터가 복원되었습니다!');
+          } else {
+            showToast('올바른 백업 파일이 아닙니다.', 'error');
+          }
+        } catch (err) {
+          showToast('파일을 읽는 중 오류가 발생했습니다.', 'error');
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    function confirmResetData() {
+      showConfirm('데이터 초기화', '모든 경기, 토너먼트, 선수 기록이 초기 샘플 데이터로 되돌아갑니다. 계속하시겠습니까?', () => {
+        appState = createInitialSampleData();
+        saveState();
+        refreshAllUI();
+        showToast('초기 샘플 데이터로 재설정되었습니다.');
+      });
+    }
+  </script>
+</body>
+</html>
