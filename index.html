@@ -105,11 +105,12 @@
     <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4">
       <div class="text-center space-y-1">
         <div class="w-12 h-12 bg-amber-100 text-amber-700 rounded-2xl mx-auto flex items-center justify-center text-xl font-black mb-2">🔒</div>
-        <h3 class="text-lg font-extrabold text-slate-900">비밀번호 인증 필요</h3>
-        <p class="text-xs text-slate-500">기록원 메뉴에 접근하려면 비밀번호를 입력하세요.</p>
+        <h3 class="text-lg font-extrabold text-slate-900">기록원 로그인</h3>
+        <p class="text-xs text-slate-500">기록원 메뉴에 접근하려면 이메일과 비밀번호를 입력하세요.</p>
       </div>
       <form onsubmit="verifyPassword(event)" class="space-y-3">
-        <input type="password" id="accessPasswordInput" placeholder="비밀번호 입력" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-center text-lg font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500">
+        <input type="email" id="accessEmailInput" placeholder="이메일" required autocomplete="username" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-center text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500">
+        <input type="password" id="accessPasswordInput" placeholder="비밀번호 입력" required autocomplete="current-password" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-center text-lg font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500">
         <div class="flex gap-2 pt-1">
           <button type="button" onclick="closePasswordModal()" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold transition">
             취소
@@ -641,9 +642,9 @@
           </div>
 
           <div class="space-y-1.5">
-            <label class="block text-xs font-bold text-slate-700">기록원 메뉴 비밀번호 변경</label>
+            <label class="block text-xs font-bold text-slate-700">기록원 로그인 비밀번호 변경</label>
             <div class="flex gap-2">
-              <input type="password" id="newPasswordInput" placeholder="새 비밀번호 (4자리 이상)" class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none">
+              <input type="password" id="newPasswordInput" placeholder="새 비밀번호 (6자리 이상)" class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none">
               <button type="button" onclick="changePassword()" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold rounded-xl transition">변경</button>
             </div>
           </div>
@@ -658,7 +659,7 @@
   <footer class="bg-slate-900 text-slate-400 text-xs py-6 mt-10 border-t border-slate-800">
     <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
       <p class="font-semibold text-slate-300">⚾ 8개 팀 야구 리그 공식 기록 시스템 (A조 · B조 · 결선 토너먼트)</p>
-      <p>모든 기록은 현재 기기 브라우저에 자동 저장됩니다.</p>
+      <p>모든 기록은 서버(Supabase)에 저장되며, 기록원만 수정할 수 있습니다.</p>
     </div>
   </footer>
 
@@ -676,7 +677,6 @@
 
     let appState = {
       leagueTitle: '2026 야구 리그 기록실',
-      password: '1234',
       standingMode: 'winPct',
       eraBase: 9,
       teams: [],
@@ -743,7 +743,6 @@
 
       return {
         leagueTitle: '2026 야구 리그 기록실',
-        password: '1234',
         standingMode: 'winPct',
         eraBase: 9,
         teams,
@@ -754,34 +753,183 @@
       };
     }
 
+    // ===== Supabase 연결 설정 =====
+    const SUPABASE_URL = 'https://kqdzkglqbbhbolkapiqv.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_LXugbxsGP0VPIxDSoznjPw_ZxTtwKsm';
+    const SESSION_KEY = 'baseball_recorder_session';
+    const EMAIL_KEY = 'baseball_recorder_email';
+    const ROW_ID = 1;
+
+    let session = null;        // 기록원 로그인 정보
+    let remoteReady = false;   // 서버에서 데이터를 한 번이라도 정상적으로 확인했는지
+    let remoteHasRow = false;  // 서버에 저장된 데이터가 있는지
+    let lastRemoteJson = '';
+    let saveTimer = null;
+
+    function stateForSave() {
+      const copy = { ...appState };
+      delete copy.password; // 비밀번호는 데이터에 포함하지 않음
+      return copy;
+    }
+
+    function applyParsedState(parsed) {
+      appState = parsed;
+      delete appState.password;
+      appState.teams = normalizeTeamsGroups(appState.teams);
+      appState.playoffs = normalizePlayoffs(appState.playoffs);
+    }
+
+    function isValidState(parsed) {
+      return parsed && Array.isArray(parsed.teams) && parsed.teams.length === 8;
+    }
+
+    // ----- 로그인 세션 -----
+    function readSession() {
+      try { session = JSON.parse(localStorage.getItem(SESSION_KEY)); } catch (e) { session = null; }
+    }
+
+    function storeSession(s) {
+      session = s;
+      try {
+        if (s) localStorage.setItem(SESSION_KEY, JSON.stringify(s));
+        else localStorage.removeItem(SESSION_KEY);
+      } catch (e) {}
+    }
+
+    function saveAuthResponse(d) {
+      storeSession({
+        access_token: d.access_token,
+        refresh_token: d.refresh_token,
+        expires_at: Math.floor(Date.now() / 1000) + (d.expires_in || 3600)
+      });
+    }
+
+    async function signIn(email, password) {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      if (!res.ok) throw new Error('login failed');
+      saveAuthResponse(await res.json());
+    }
+
+    // 유효한 로그인 토큰 반환 (만료 임박 시 자동 갱신)
+    async function getAccessToken() {
+      if (!session) return null;
+      const now = Math.floor(Date.now() / 1000);
+      if (session.expires_at - now > 60) return session.access_token;
+      try {
+        const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refresh_token: session.refresh_token })
+        });
+        if (!res.ok) throw new Error('refresh failed');
+        saveAuthResponse(await res.json());
+        return session.access_token;
+      } catch (e) {
+        storeSession(null);
+        isAuthenticated = false;
+        return null;
+      }
+    }
+
+    // ----- 서버 읽기 / 쓰기 -----
+    // 반환값: 'applied'(서버 데이터 적용) | 'norow'(서버에 데이터 없음) | 'same'(변화 없음) | 'error'
+    async function fetchRemote() {
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/league_state?id=eq.${ROW_ID}&select=data`, {
+          headers: { 'apikey': SUPABASE_KEY }
+        });
+        if (!res.ok) throw new Error('fetch failed');
+        const rows = await res.json();
+        remoteReady = true;
+        if (!rows.length || !isValidState(rows[0].data)) {
+          remoteHasRow = false;
+          return 'norow';
+        }
+        remoteHasRow = true;
+        const json = JSON.stringify(rows[0].data);
+        if (json === lastRemoteJson) return 'same';
+        lastRemoteJson = json;
+        applyParsedState(rows[0].data);
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(stateForSave())); } catch (e) {}
+        return 'applied';
+      } catch (e) {
+        return 'error';
+      }
+    }
+
+    async function pushRemote() {
+      const token = await getAccessToken();
+      if (!token) return false;
+      try {
+        const data = stateForSave();
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/league_state?on_conflict=id`, {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'resolution=merge-duplicates,return=minimal'
+          },
+          body: JSON.stringify([{ id: ROW_ID, data, updated_at: new Date().toISOString() }])
+        });
+        if (!res.ok) throw new Error('save failed');
+        remoteHasRow = true;
+        lastRemoteJson = JSON.stringify(data);
+        return true;
+      } catch (e) {
+        showToast('서버 저장에 실패했습니다. 인터넷 연결을 확인하세요.', 'error');
+        return false;
+      }
+    }
+
     function loadState() {
+      // 먼저 이 기기에 저장된 사본으로 빠르게 화면을 띄우고, 이후 서버 데이터로 갱신합니다.
       try {
         const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('baseball_8teams_league_v3');
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (parsed && Array.isArray(parsed.teams) && parsed.teams.length === 8) {
-            appState = parsed;
-            appState.teams = normalizeTeamsGroups(appState.teams);
-            appState.playoffs = normalizePlayoffs(appState.playoffs);
-            if (!appState.password) appState.password = '1234';
+          if (isValidState(parsed)) {
+            applyParsedState(parsed);
             return;
           }
         }
       } catch (e) {}
       appState = createInitialSampleData();
-      saveState();
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(stateForSave())); } catch (e) {}
     }
 
     function saveState() {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stateForSave()));
       } catch (e) {
         showToast('저장 공간 부족', 'error');
       }
+      // 로그인한 기록원만 서버에 저장
+      if (session && remoteReady) {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(pushRemote, 600);
+      } else if (session && !remoteReady) {
+        showToast('서버와 연결되지 않아 이 기기에만 저장되었습니다.', 'error');
+      }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
+    async function syncFromRemote() {
+      const result = await fetchRemote();
+      if (result === 'applied') refreshAllUI();
+      return result;
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
       loadState();
+      readSession();
+      if (session) {
+        const token = await getAccessToken();
+        isAuthenticated = !!token;
+      }
       const today = new Date().toISOString().split('T')[0];
       const gd = document.getElementById('gameDateInput');
       const ld = document.getElementById('playerLogDateInput');
@@ -789,6 +937,12 @@
       if (ld) ld.value = today;
 
       refreshAllUI();
+      await syncFromRemote();
+
+      // 보기 전용 방문자는 주기적으로 / 화면 복귀 시 최신 기록을 다시 불러옴
+      const refreshIfViewer = () => { if (!isAuthenticated && !document.hidden) syncFromRemote(); };
+      setInterval(refreshIfViewer, 30000);
+      document.addEventListener('visibilitychange', refreshIfViewer);
     });
 
     function refreshAllUI() {
@@ -818,11 +972,16 @@
           pendingProtectedTab = tabName;
           const pwInput = document.getElementById('accessPasswordInput');
           if (pwInput) pwInput.value = '';
+          const emailInput = document.getElementById('accessEmailInput');
+          if (emailInput && !emailInput.value) {
+            try { emailInput.value = localStorage.getItem(EMAIL_KEY) || ''; } catch (e) {}
+          }
           const modal = document.getElementById('passwordModal');
           if (modal) {
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            if (pwInput) pwInput.focus();
+            if (emailInput && !emailInput.value) emailInput.focus();
+            else if (pwInput) pwInput.focus();
           }
           return;
         }
@@ -850,24 +1009,38 @@
       });
     }
 
-    function verifyPassword(e) {
+    async function verifyPassword(e) {
       e.preventDefault();
+      const email = document.getElementById('accessEmailInput').value.trim();
       const inputPw = document.getElementById('accessPasswordInput').value;
-      const targetPw = appState.password || '1234';
+      const pwInput = document.getElementById('accessPasswordInput');
 
-      if (inputPw === targetPw) {
-        isAuthenticated = true;
-        closePasswordModal();
-        showToast('인증되었습니다!');
-        if (pendingProtectedTab) {
-          const tab = pendingProtectedTab;
-          pendingProtectedTab = null;
-          switchTab(tab);
-        }
-      } else {
-        showToast('비밀번호가 틀렸습니다.', 'error');
-        const pwInput = document.getElementById('accessPasswordInput');
+      try {
+        await signIn(email, inputPw);
+      } catch (err) {
+        showToast('이메일 또는 비밀번호가 틀렸습니다.', 'error');
         if (pwInput) pwInput.value = '';
+        return;
+      }
+
+      try { localStorage.setItem(EMAIL_KEY, email); } catch (e2) {}
+      isAuthenticated = true;
+      const tabAfterLogin = pendingProtectedTab;
+      closePasswordModal();
+      pendingProtectedTab = tabAfterLogin;
+      showToast('인증되었습니다!');
+
+      // 로그인 직후: 서버 최신 데이터 확인. 서버가 비어 있으면 이 기기의 데이터를 처음으로 올림
+      const result = await syncFromRemote();
+      if (result === 'norow') {
+        const ok = await pushRemote();
+        if (ok) showToast('현재 기록을 서버에 저장했습니다.');
+      }
+
+      if (pendingProtectedTab) {
+        const tab = pendingProtectedTab;
+        pendingProtectedTab = null;
+        switchTab(tab);
       }
     }
 
@@ -880,18 +1053,35 @@
       pendingProtectedTab = null;
     }
 
-    function changePassword() {
+    async function changePassword() {
       const input = document.getElementById('newPasswordInput');
       if (!input) return;
       const newPw = input.value.trim();
-      if (!newPw || newPw.length < 4) {
-        showToast('4글자 이상 입력해주세요.', 'error');
+      if (!newPw || newPw.length < 6) {
+        showToast('6글자 이상 입력해주세요.', 'error');
         return;
       }
-      appState.password = newPw;
-      saveState();
-      input.value = '';
-      showToast('비밀번호가 변경되었습니다!');
+      const token = await getAccessToken();
+      if (!token) {
+        showToast('로그인이 만료되었습니다. 다시 로그인해주세요.', 'error');
+        return;
+      }
+      try {
+        const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+          method: 'PUT',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ password: newPw })
+        });
+        if (!res.ok) throw new Error('update failed');
+        input.value = '';
+        showToast('비밀번호가 변경되었습니다!');
+      } catch (e) {
+        showToast('비밀번호 변경에 실패했습니다.', 'error');
+      }
     }
 
     let toastTimer = null;
@@ -1864,7 +2054,7 @@
 
     // 백업 / 복원 / 초기화
     function exportData() {
-      const dataStr = JSON.stringify(appState, null, 2);
+      const dataStr = JSON.stringify(stateForSave(), null, 2);
       const blob = new Blob([dataStr], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1882,10 +2072,8 @@
       reader.onload = (e) => {
         try {
           const parsed = JSON.parse(e.target.result);
-          if (parsed && Array.isArray(parsed.teams) && parsed.teams.length === 8) {
-            appState = parsed;
-            appState.teams = normalizeTeamsGroups(appState.teams);
-            appState.playoffs = normalizePlayoffs(appState.playoffs);
+          if (isValidState(parsed)) {
+            applyParsedState(parsed);
             saveState();
             refreshAllUI();
             showToast('백업 데이터가 복원되었습니다!');
