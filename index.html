@@ -238,6 +238,25 @@
         </div>
       </div>
 
+      <!-- 경기 일정 -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base sm:text-lg font-extrabold text-slate-900">🗓️ 경기 일정</h2>
+            <p class="text-xs text-slate-500 mt-0.5">예정된 경기 일정입니다. 결과가 등록되면 일정에서 자동으로 빠집니다.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <select id="filterScheduleDate" onchange="renderSchedulesList()" class="bg-slate-50 border border-slate-300 text-slate-800 text-xs sm:text-sm font-semibold rounded-xl px-3 py-2 focus:outline-none">
+              <option value="ALL">전체 일정 보기</option>
+            </select>
+            <button type="button" onclick="switchTab('recorder')" class="px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold rounded-xl transition">
+              + 일정 등록
+            </button>
+          </div>
+        </div>
+        <div id="scheduleListContainer" class="p-4 space-y-4 bg-slate-50/50"></div>
+      </div>
+
       <!-- 날짜별 예선 경기 결과 리스트 -->
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="p-4 sm:p-5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
@@ -396,6 +415,108 @@
 
           <button type="submit" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-amber-400 font-extrabold text-sm sm:text-base rounded-xl shadow-md transition">
             + 정규 리그 경기 결과 저장하기
+          </button>
+        </form>
+      </div>
+
+      <!-- 경기 일정 등록 -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-4 sm:p-5 bg-slate-900 text-white">
+          <h2 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
+            <span class="text-amber-400">🗓️</span> 경기 일정 등록 (예정 경기)
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">앞으로 열릴 경기를 미리 등록합니다. 같은 날짜·같은 팀의 결과를 입력하면 일정에서 자동으로 빠집니다.</p>
+        </div>
+
+        <form onsubmit="handleAddSchedule(event)" class="p-4 sm:p-6 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">경기 날짜</label>
+              <input type="date" id="schedDateInput" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-semibold focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">경기 시간 (선택)</label>
+              <input type="time" id="schedTimeInput" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-semibold focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">구장 / 비고 (선택)</label>
+              <input type="text" id="schedNoteInput" placeholder="예: 제1구장" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none">
+            </div>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 grid grid-cols-1 sm:grid-cols-11 gap-3 items-center">
+            <div class="sm:col-span-5 space-y-2">
+              <span class="inline-block px-2 py-0.5 bg-slate-200 text-slate-700 text-[11px] font-extrabold rounded">원정 (AWAY)</span>
+              <select id="schedAwayTeamSelect" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-bold focus:outline-none"></select>
+            </div>
+            <div class="sm:col-span-1 text-center font-black text-slate-400 text-lg py-1">VS</div>
+            <div class="sm:col-span-5 space-y-2">
+              <span class="inline-block px-2 py-0.5 bg-amber-100 text-amber-800 text-[11px] font-extrabold rounded">홈 (HOME)</span>
+              <select id="schedHomeTeamSelect" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-bold focus:outline-none"></select>
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <button type="submit" id="schedSubmitBtn" class="flex-1 py-3.5 bg-slate-900 hover:bg-slate-800 text-amber-400 font-extrabold text-sm sm:text-base rounded-xl shadow-md transition">
+              + 경기 일정 저장하기
+            </button>
+            <button type="button" id="schedCancelEditBtn" onclick="cancelEditSchedule()" class="hidden px-5 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition">
+              수정 취소
+            </button>
+          </div>
+        </form>
+
+        <div class="border-t border-slate-200">
+          <div class="px-4 sm:px-6 py-3 bg-slate-50 text-sm font-extrabold text-slate-900">📋 등록된 경기 일정</div>
+          <div id="scheduleManageContainer" class="p-4 space-y-2 max-h-96 overflow-y-auto"></div>
+        </div>
+      </div>
+
+      <!-- 하루 경기 일정 일괄 등록 -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-4 sm:p-5 bg-slate-900 text-white">
+          <h2 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
+            <span class="text-amber-400">📆</span> 하루 경기 일정 한 번에 등록
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">하루에 열리는 여러 경기를 한 번에 등록합니다. 결승일처럼 1~2경기만 있는 날은 경기 수를 줄여서 사용하세요.</p>
+        </div>
+
+        <form onsubmit="handleAddBulkSchedule(event)" class="p-4 sm:p-6 space-y-4">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">경기 날짜</label>
+              <input type="date" id="bulkDateInput" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-semibold focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">경기 수</label>
+              <select id="bulkCountSelect" onchange="renderBulkRows(true)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-bold focus:outline-none">
+                <option value="1">1경기</option>
+                <option value="2">2경기</option>
+                <option value="3">3경기</option>
+                <option value="4" selected>4경기</option>
+                <option value="5">5경기</option>
+                <option value="6">6경기</option>
+                <option value="7">7경기</option>
+                <option value="8">8경기</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">첫 경기 시작 시간</label>
+              <input type="time" id="bulkStartTime" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-semibold focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">경기 간격 (분)</label>
+              <input type="number" id="bulkInterval" min="10" max="600" step="5" value="90" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-semibold focus:outline-none">
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <button type="button" onclick="autoFillBulkTimes()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition">⏰ 시작 시간·간격으로 시간 자동 채우기</button>
+          </div>
+
+          <div id="bulkRowsContainer" class="space-y-3"></div>
+
+          <button type="submit" class="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm sm:text-base rounded-xl shadow-md transition">
+            + 하루 일정 모두 저장하기
           </button>
         </form>
       </div>
@@ -682,10 +803,12 @@
       teams: [],
       players: [],
       games: [],
+      schedules: [],
       playerLogs: [],
       playoffs: createDefaultPlayoffs()
     };
 
+    let editingScheduleId = null;
     let currentRecordInputType = 'batter';
     let pendingProtectedTab = null;
     let isAuthenticated = false;
@@ -748,6 +871,7 @@
         teams,
         players,
         games,
+        schedules: [],
         playerLogs,
         playoffs: createDefaultPlayoffs()
       };
@@ -777,6 +901,7 @@
       delete appState.password;
       appState.teams = normalizeTeamsGroups(appState.teams);
       appState.playoffs = normalizePlayoffs(appState.playoffs);
+      appState.schedules = Array.isArray(appState.schedules) ? appState.schedules : [];
     }
 
     function isValidState(parsed) {
@@ -930,11 +1055,15 @@
         const token = await getAccessToken();
         isAuthenticated = !!token;
       }
-      const today = new Date().toISOString().split('T')[0];
+      const today = localToday();
       const gd = document.getElementById('gameDateInput');
       const ld = document.getElementById('playerLogDateInput');
+      const sd = document.getElementById('schedDateInput');
       if (gd) gd.value = today;
       if (ld) ld.value = today;
+      if (sd) sd.value = today;
+      const bd = document.getElementById('bulkDateInput');
+      if (bd) bd.value = today;
 
       refreshAllUI();
       await syncFromRemote();
@@ -955,10 +1084,13 @@
       updateEraBaseButtons();
       populateTeamDropdowns();
       populateDateFilters();
+      populateScheduleFilter();
+      renderBulkRows(true);
 
       renderStandingsTable();
       renderPlayoffBracket();
       syncPlayoffRecorderForm();
+      renderSchedulesList();
       renderGamesList();
       renderBattersTable();
       renderPitchersTable();
@@ -1029,6 +1161,7 @@
       closePasswordModal();
       pendingProtectedTab = tabAfterLogin;
       showToast('인증되었습니다!');
+      renderSchedulesList();
 
       // 로그인 직후: 서버 최신 데이터 확인. 서버가 비어 있으면 이 기기의 데이터를 처음으로 올림
       const result = await syncFromRemote();
@@ -1568,6 +1701,396 @@
       });
     }
 
+    // ===== 경기 일정 =====
+    function localToday() {
+      const d = new Date();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${d.getFullYear()}-${m}-${day}`;
+    }
+
+    function escapeHtml(v) {
+      return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function formatScheduleDate(dateStr) {
+      const d = new Date(dateStr + 'T00:00:00');
+      if (isNaN(d.getTime())) return dateStr;
+      return `${dateStr} (${['일', '월', '화', '수', '목', '금', '토'][d.getDay()]})`;
+    }
+
+    // 정규 리그 예정 경기 + (날짜가 지정되고 아직 점수가 없는) 준결승/결승 일정
+    function getScheduleEntries() {
+      const entries = (appState.schedules || []).map(sc => {
+        const away = appState.teams.find(t => t.id === sc.awayTeamId);
+        const home = appState.teams.find(t => t.id === sc.homeTeamId);
+        return {
+          kind: 'league',
+          id: sc.id,
+          date: sc.date,
+          time: sc.time || '',
+          label: away && home && away.group === home.group ? `${away.group}조` : '교류전',
+          awayName: away ? away.name : '알 수 없음',
+          homeName: home ? home.name : '알 수 없음',
+          note: sc.note || ''
+        };
+      });
+
+      const c = getPlayoffComputed();
+      const hasScore = (v) => v !== '' && v !== null && v !== undefined && !isNaN(Number(v));
+      const addPlayoff = (label, match, t1, t2) => {
+        if (!match.date) return;
+        if (hasScore(match.score1) && hasScore(match.score2)) return;
+        entries.push({ kind: 'playoff', id: null, date: match.date, time: '', label, awayName: t1.name, homeName: t2.name, note: '' });
+      };
+      addPlayoff('준결승 1', c.p.sf1, c.sf1T1, c.sf1T2);
+      addPlayoff('준결승 2', c.p.sf2, c.sf2T1, c.sf2T2);
+      addPlayoff('결승', c.p.final, c.finalT1, c.finalT2);
+
+      entries.sort((a, b) => (a.date + ' ' + a.time).localeCompare(b.date + ' ' + b.time));
+      return entries;
+    }
+
+    function populateScheduleFilter() {
+      const sel = document.getElementById('filterScheduleDate');
+      if (!sel) return;
+      const prev = sel.value;
+      const dates = [...new Set(getScheduleEntries().map(e => e.date))].sort();
+      sel.innerHTML = '<option value="ALL">전체 일정 보기</option>';
+      dates.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d;
+        opt.textContent = `${d} 일정`;
+        sel.appendChild(opt);
+      });
+      if (dates.includes(prev)) sel.value = prev;
+    }
+
+    function renderScheduleCard(e, showActions) {
+      const isPlayoff = e.kind === 'playoff';
+      const badgeCls = isPlayoff ? 'bg-slate-900 text-amber-400' : 'bg-slate-100 text-slate-700';
+      const actions = (showActions && e.kind === 'league') ? `
+        <div class="flex items-center gap-1 shrink-0">
+          <button type="button" onclick="fillGameFromSchedule('${e.id}')" class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-slate-900 text-amber-400 hover:bg-slate-800">결과 입력</button>
+          <button type="button" onclick="startEditSchedule('${e.id}')" class="text-xs font-bold px-2 py-1 rounded-lg text-slate-600 hover:bg-slate-100">수정</button>
+          <button type="button" onclick="deleteSchedule('${e.id}')" class="text-xs font-bold px-2 py-1 rounded-lg text-rose-600 hover:bg-rose-50">삭제</button>
+        </div>` : '';
+
+      return `
+        <div class="bg-white border border-slate-200 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="text-xs text-slate-500 font-semibold flex items-center gap-1.5 sm:w-48 shrink-0">
+            <span class="px-1.5 py-0.5 rounded font-extrabold ${badgeCls}">${escapeHtml(e.label)}</span>
+            <span>${e.time ? '⏰ ' + escapeHtml(e.time) : '시간 미정'}</span>
+          </div>
+          <div class="flex flex-col items-center flex-1 gap-0.5">
+            <div class="flex items-center justify-center gap-3 font-extrabold text-sm">
+              <span>${escapeHtml(e.awayName)}</span>
+              <span class="bg-slate-100 text-slate-500 px-2.5 py-0.5 rounded-lg text-xs">VS</span>
+              <span>${escapeHtml(e.homeName)}</span>
+            </div>
+            ${e.note ? `<div class="text-[11px] text-slate-500">📍 ${escapeHtml(e.note)}</div>` : ''}
+          </div>
+          ${actions}
+        </div>`;
+    }
+
+    function renderDateGroups(entries, showActions) {
+      const today = localToday();
+      const byDate = {};
+      entries.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
+      return Object.keys(byDate).sort().map(d => {
+        const badge = d === today
+          ? '<span class="ml-2 px-1.5 py-0.5 rounded bg-amber-500 text-slate-950 text-[10px] font-black">오늘</span>'
+          : '';
+        return `
+          <div class="space-y-2">
+            <div class="text-xs font-extrabold text-slate-700 flex items-center">📅 ${formatScheduleDate(d)}${badge}</div>
+            ${byDate[d].map(e => renderScheduleCard(e, showActions)).join('')}
+          </div>`;
+      }).join('');
+    }
+
+    function renderSchedulesList() {
+      const today = localToday();
+      const all = getScheduleEntries();
+
+      // 1) 보기 화면
+      const container = document.getElementById('scheduleListContainer');
+      if (container) {
+        const filterEl = document.getElementById('filterScheduleDate');
+        const filterDate = filterEl ? filterEl.value : 'ALL';
+        const list = filterDate === 'ALL' ? all : all.filter(e => e.date === filterDate);
+
+        if (list.length === 0) {
+          container.innerHTML = `<div class="text-center py-6 text-slate-400 text-sm">등록된 경기 일정이 없습니다.</div>`;
+        } else {
+          const upcoming = list.filter(e => e.date >= today);
+          const overdue = list.filter(e => e.date < today);
+          let html = '';
+          if (upcoming.length) html += renderDateGroups(upcoming, isAuthenticated);
+          if (overdue.length) {
+            html += `
+              <div class="pt-2 space-y-3 ${upcoming.length ? 'border-t border-dashed border-slate-300' : ''}">
+                <div class="text-xs font-bold text-slate-500">⏰ 날짜가 지났지만 결과가 아직 등록되지 않은 경기</div>
+                <div class="space-y-3 opacity-70">${renderDateGroups(overdue, isAuthenticated)}</div>
+              </div>`;
+          }
+          container.innerHTML = html;
+        }
+      }
+
+      // 2) 기록원 화면 (등록된 일정 관리)
+      const manage = document.getElementById('scheduleManageContainer');
+      if (manage) {
+        const leagueOnly = all.filter(e => e.kind === 'league');
+        const byDate = {};
+        leagueOnly.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
+        manage.innerHTML = leagueOnly.length === 0
+          ? `<div class="text-center py-4 text-slate-400 text-sm">등록된 경기 일정이 없습니다.</div>`
+          : Object.keys(byDate).sort().map(d => `
+              <div class="space-y-2">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-[11px] font-bold text-slate-500">${formatScheduleDate(d)}${d === today ? ' · 오늘' : (d < today ? ' · 날짜 지남' : '')} · ${byDate[d].length}경기</span>
+                  <button type="button" onclick="deleteScheduleDay('${d}')" class="text-[11px] font-bold text-rose-600 hover:bg-rose-50 px-2 py-0.5 rounded">이 날짜 일정 전체 삭제</button>
+                </div>
+                ${byDate[d].map(e => renderScheduleCard(e, true)).join('')}
+              </div>`).join('');
+      }
+    }
+
+    function handleAddSchedule(e) {
+      e.preventDefault();
+      const date = document.getElementById('schedDateInput').value;
+      const time = document.getElementById('schedTimeInput').value;
+      const note = document.getElementById('schedNoteInput').value.trim();
+      const awayTeamId = document.getElementById('schedAwayTeamSelect').value;
+      const homeTeamId = document.getElementById('schedHomeTeamSelect').value;
+
+      if (!date) {
+        showToast('경기 날짜를 입력하세요.', 'error');
+        return;
+      }
+      if (awayTeamId === homeTeamId) {
+        showToast('원정팀과 홈팀이 같을 수 없습니다.', 'error');
+        return;
+      }
+
+      if (editingScheduleId) {
+        const target = appState.schedules.find(sc => sc.id === editingScheduleId);
+        if (target) Object.assign(target, { date, time, awayTeamId, homeTeamId, note });
+        cancelEditSchedule(true);
+        saveState();
+        refreshAllUI();
+        showToast('경기 일정이 수정되었습니다!');
+        return;
+      }
+
+      appState.schedules.push({ id: 's_' + Date.now(), date, time, awayTeamId, homeTeamId, note });
+      document.getElementById('schedNoteInput').value = '';
+      document.getElementById('schedTimeInput').value = '';
+      saveState();
+      refreshAllUI();
+      showToast('경기 일정이 등록되었습니다!');
+    }
+
+    function startEditSchedule(id) {
+      const sc = appState.schedules.find(x => x.id === id);
+      if (!sc) return;
+      editingScheduleId = id;
+      document.getElementById('schedDateInput').value = sc.date;
+      document.getElementById('schedTimeInput').value = sc.time || '';
+      document.getElementById('schedNoteInput').value = sc.note || '';
+      document.getElementById('schedAwayTeamSelect').value = sc.awayTeamId;
+      document.getElementById('schedHomeTeamSelect').value = sc.homeTeamId;
+      document.getElementById('schedSubmitBtn').textContent = '✏️ 일정 수정 저장하기';
+      document.getElementById('schedCancelEditBtn').classList.remove('hidden');
+      switchTab('recorder');
+      document.getElementById('schedDateInput').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function cancelEditSchedule(silent) {
+      editingScheduleId = null;
+      document.getElementById('schedSubmitBtn').textContent = '+ 경기 일정 저장하기';
+      document.getElementById('schedCancelEditBtn').classList.add('hidden');
+      document.getElementById('schedNoteInput').value = '';
+      document.getElementById('schedTimeInput').value = '';
+      if (silent !== true) showToast('일정 수정을 취소했습니다.');
+    }
+
+    function deleteSchedule(id) {
+      showConfirm('일정 삭제', '이 경기 일정을 삭제하시겠습니까?', () => {
+        appState.schedules = appState.schedules.filter(sc => sc.id !== id);
+        if (editingScheduleId === id) cancelEditSchedule(true);
+        saveState();
+        refreshAllUI();
+        showToast('경기 일정이 삭제되었습니다.');
+      });
+    }
+
+    // 일정 → 결과 입력 폼으로 불러오기
+    function fillGameFromSchedule(id) {
+      const sc = appState.schedules.find(x => x.id === id);
+      if (!sc) return;
+      switchTab('recorder');
+      document.getElementById('gameDateInput').value = sc.date;
+      document.getElementById('awayTeamSelect').value = sc.awayTeamId;
+      document.getElementById('homeTeamSelect').value = sc.homeTeamId;
+      document.getElementById('gameNoteInput').value = sc.note || '';
+      document.getElementById('awayScoreInput').value = 0;
+      document.getElementById('homeScoreInput').value = 0;
+      document.getElementById('gameDateInput').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      showToast('일정 정보를 불러왔습니다. 점수를 입력하고 저장하세요.');
+    }
+
+    // ===== 하루 일정 일괄 등록 =====
+    function renderBulkRows(preserve) {
+      const container = document.getElementById('bulkRowsContainer');
+      const countEl = document.getElementById('bulkCountSelect');
+      if (!container || !countEl) return;
+      const count = Number(countEl.value) || 4;
+
+      const prev = [];
+      if (preserve) {
+        for (let i = 0; i < 8; i++) {
+          const t = document.getElementById('bulkTime_' + i);
+          if (!t) break;
+          prev.push({
+            time: t.value,
+            away: document.getElementById('bulkAway_' + i).value,
+            home: document.getElementById('bulkHome_' + i).value,
+            note: document.getElementById('bulkNote_' + i).value
+          });
+        }
+      }
+
+      const teamOpts = '<option value="">팀 선택</option>' + appState.teams
+        .map(t => `<option value="${escapeHtml(t.id)}">[${escapeHtml(t.group || 'A')}조] ${escapeHtml(t.name)}</option>`)
+        .join('');
+
+      let html = '';
+      for (let i = 0; i < count; i++) {
+        html += `
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
+            <div class="sm:col-span-1 text-xs font-black text-slate-600">${i + 1}경기</div>
+            <input type="time" id="bulkTime_${i}" class="sm:col-span-2 bg-white border border-slate-300 rounded-xl px-2.5 py-2 text-sm font-semibold focus:outline-none">
+            <select id="bulkAway_${i}" class="sm:col-span-3 bg-white border border-slate-300 rounded-xl px-2.5 py-2 text-sm font-bold focus:outline-none">${teamOpts}</select>
+            <div class="sm:col-span-1 text-center font-black text-slate-400 text-xs">VS</div>
+            <select id="bulkHome_${i}" class="sm:col-span-3 bg-white border border-slate-300 rounded-xl px-2.5 py-2 text-sm font-bold focus:outline-none">${teamOpts}</select>
+            <input type="text" id="bulkNote_${i}" placeholder="구장 (선택)" class="sm:col-span-2 bg-white border border-slate-300 rounded-xl px-2.5 py-2 text-sm focus:outline-none">
+          </div>`;
+      }
+      container.innerHTML = html;
+
+      prev.slice(0, count).forEach((r, i) => {
+        document.getElementById('bulkTime_' + i).value = r.time;
+        document.getElementById('bulkAway_' + i).value = r.away;
+        document.getElementById('bulkHome_' + i).value = r.home;
+        document.getElementById('bulkNote_' + i).value = r.note;
+      });
+    }
+
+    function autoFillBulkTimes() {
+      const start = document.getElementById('bulkStartTime').value;
+      const interval = parseInt(document.getElementById('bulkInterval').value, 10);
+      if (!start) {
+        showToast('첫 경기 시작 시간을 입력하세요.', 'error');
+        return;
+      }
+      if (!interval || interval < 1) {
+        showToast('경기 간격(분)을 입력하세요.', 'error');
+        return;
+      }
+      const [h, m] = start.split(':').map(Number);
+      const base = h * 60 + m;
+      const count = Number(document.getElementById('bulkCountSelect').value) || 4;
+      for (let i = 0; i < count; i++) {
+        const total = (base + i * interval) % (24 * 60);
+        const hh = String(Math.floor(total / 60)).padStart(2, '0');
+        const mm = String(total % 60).padStart(2, '0');
+        document.getElementById('bulkTime_' + i).value = `${hh}:${mm}`;
+      }
+      showToast('경기 시간이 채워졌습니다.');
+    }
+
+    function handleAddBulkSchedule(e) {
+      e.preventDefault();
+      const date = document.getElementById('bulkDateInput').value;
+      if (!date) {
+        showToast('경기 날짜를 입력하세요.', 'error');
+        return;
+      }
+
+      const count = Number(document.getElementById('bulkCountSelect').value) || 4;
+      const rows = [];
+      for (let i = 0; i < count; i++) {
+        const away = document.getElementById('bulkAway_' + i).value;
+        const home = document.getElementById('bulkHome_' + i).value;
+        const time = document.getElementById('bulkTime_' + i).value;
+        const note = document.getElementById('bulkNote_' + i).value.trim();
+        if (!away && !home) continue; // 팀을 고르지 않은 줄은 건너뜀
+        if (!away || !home) {
+          showToast(`${i + 1}경기: 원정팀과 홈팀을 모두 선택하세요.`, 'error');
+          return;
+        }
+        if (away === home) {
+          showToast(`${i + 1}경기: 원정팀과 홈팀이 같을 수 없습니다.`, 'error');
+          return;
+        }
+        rows.push({ away, home, time, note });
+      }
+
+      if (rows.length === 0) {
+        showToast('등록할 경기를 입력하세요.', 'error');
+        return;
+      }
+
+      // 같은 날 같은 팀이 두 번 이상 나오는지 점검 (입력 내 + 이미 등록된 일정/결과)
+      const seen = {};
+      rows.forEach(r => { [r.away, r.home].forEach(id => { seen[id] = (seen[id] || 0) + 1; }); });
+      const existingIds = new Set();
+      appState.schedules.filter(sc => sc.date === date).forEach(sc => { existingIds.add(sc.awayTeamId); existingIds.add(sc.homeTeamId); });
+      appState.games.filter(g => g.date === date).forEach(g => { existingIds.add(g.awayTeamId); existingIds.add(g.homeTeamId); });
+
+      const warnTeams = Object.keys(seen)
+        .filter(id => seen[id] > 1 || existingIds.has(id))
+        .map(id => getTeamName(id));
+
+      const doSave = () => {
+        rows.forEach((r, i) => {
+          appState.schedules.push({
+            id: 's_' + Date.now() + '_' + i,
+            date,
+            time: r.time,
+            awayTeamId: r.away,
+            homeTeamId: r.home,
+            note: r.note
+          });
+        });
+        renderBulkRows(false); // 입력 줄 비우기 (날짜·경기 수는 유지)
+        saveState();
+        refreshAllUI();
+        showToast(`${formatScheduleDate(date)} 경기 일정 ${rows.length}건이 등록되었습니다!`);
+      };
+
+      if (warnTeams.length > 0) {
+        showConfirm('같은 날 중복 확인', `${warnTeams.join(', ')} 팀이 ${date}에 이미 다른 경기가 있거나 두 번 이상 입력되었습니다. 그래도 저장하시겠습니까?`, doSave);
+      } else {
+        doSave();
+      }
+    }
+
+    function deleteScheduleDay(date) {
+      const n = appState.schedules.filter(sc => sc.date === date).length;
+      if (n === 0) return;
+      showConfirm('날짜 일정 전체 삭제', `${date}에 등록된 경기 일정 ${n}건을 모두 삭제하시겠습니까?`, () => {
+        appState.schedules = appState.schedules.filter(sc => sc.date !== date);
+        if (editingScheduleId && !appState.schedules.some(sc => sc.id === editingScheduleId)) cancelEditSchedule(true);
+        saveState();
+        refreshAllUI();
+        showToast(`${date} 일정 ${n}건이 삭제되었습니다.`);
+      });
+    }
+
     // 경기 결과 등록
     function handleAddGame(e) {
       e.preventDefault();
@@ -1584,12 +2107,21 @@
       }
 
       appState.games.unshift({ id: 'g_' + Date.now(), date, awayTeamId, homeTeamId, awayScore, homeScore, note });
+
+      // 같은 날짜 · 같은 두 팀의 예정 경기는 결과가 등록되면 일정에서 제거
+      const scheduleCountBefore = appState.schedules.length;
+      appState.schedules = appState.schedules.filter(sc => !(
+        sc.date === date &&
+        ((sc.awayTeamId === awayTeamId && sc.homeTeamId === homeTeamId) ||
+         (sc.awayTeamId === homeTeamId && sc.homeTeamId === awayTeamId))
+      ));
+      const scheduleRemoved = scheduleCountBefore - appState.schedules.length;
       saveState();
       document.getElementById('awayScoreInput').value = 0;
       document.getElementById('homeScoreInput').value = 0;
       document.getElementById('gameNoteInput').value = '';
       refreshAllUI();
-      showToast('경기 결과가 등록되었습니다!');
+      showToast(scheduleRemoved > 0 ? '경기 결과가 등록되었고, 해당 일정은 일정표에서 제거되었습니다.' : '경기 결과가 등록되었습니다!');
     }
 
     function deleteGame(gameId) {
@@ -1697,7 +2229,7 @@
     }
 
     function populateTeamDropdowns() {
-      const ids = ['awayTeamSelect', 'homeTeamSelect', 'recTeamSelect', 'batterTeamFilter', 'pitcherTeamFilter'];
+      const ids = ['awayTeamSelect', 'homeTeamSelect', 'schedAwayTeamSelect', 'schedHomeTeamSelect', 'recTeamSelect', 'batterTeamFilter', 'pitcherTeamFilter'];
       ids.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -1713,7 +2245,7 @@
         });
 
         if (prev && [...el.options].some(o => o.value === prev)) el.value = prev;
-        else if (id === 'homeTeamSelect' && appState.teams.length > 1) el.value = appState.teams[1].id;
+        else if ((id === 'homeTeamSelect' || id === 'schedHomeTeamSelect') && appState.teams.length > 1) el.value = appState.teams[1].id;
       });
       updateRecPlayerDropdown();
     }
